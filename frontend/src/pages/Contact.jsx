@@ -1,0 +1,126 @@
+import { useState } from 'react';
+import { Mail, Camera, Briefcase, Send } from 'lucide-react';
+import { contactService } from '../services/apiServices';
+
+const Contact = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      await contactService.create(form);
+      setStatus('success');
+      setForm({ name: '', email: '', message: '' });
+    } catch (error) {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="text-center space-y-4 mb-16">
+        <p className="text-sm font-semibold tracking-[0.2em] text-gray-400">CONTACT</p>
+        <h2 className="text-4xl md:text-5xl font-bold text-white">Get in Touch</h2>
+        <p className="text-gray-400 max-w-2xl mx-auto pt-4 leading-relaxed">
+          I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-12">
+        {/* Contact Info */}
+        <div className="flex-1 space-y-8">
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-400">
+              <Mail size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Email</p>
+              <a href="mailto:Kondreddy2007@gmail.com" className="text-white font-medium hover:text-blue-400 transition-colors">
+                Kondreddy2007@gmail.com
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-pink-500">
+              <Camera size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Instagram</p>
+              <a href="https://instagram.com/balaji_sudarshanreddy" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-pink-500 transition-colors">
+                balaji_sudarshanreddy
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-500">
+              <Briefcase size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-400 mb-1">LinkedIn</p>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-blue-500 transition-colors">
+                Balaji Sudarshan Reddy
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Form */}
+        <div className="flex-[1.2] bg-[#1a1a1c] border border-gray-800 rounded-3xl p-8 md:p-10">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">Name</label>
+              <input 
+                required 
+                type="text" 
+                value={form.name} 
+                onChange={e => setForm({...form, name: e.target.value})}
+                className="w-full bg-[#0f0f11] border border-gray-800 rounded-xl p-4 text-white focus:outline-none focus:border-gray-500 transition-colors" 
+                placeholder="John Doe" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">Email</label>
+              <input 
+                required 
+                type="email" 
+                value={form.email} 
+                onChange={e => setForm({...form, email: e.target.value})}
+                className="w-full bg-[#0f0f11] border border-gray-800 rounded-xl p-4 text-white focus:outline-none focus:border-gray-500 transition-colors" 
+                placeholder="john@example.com" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">Message</label>
+              <textarea 
+                required 
+                value={form.message} 
+                onChange={e => setForm({...form, message: e.target.value})}
+                className="w-full bg-[#0f0f11] border border-gray-800 rounded-xl p-4 text-white focus:outline-none focus:border-gray-500 transition-colors h-32 resize-none" 
+                placeholder="Hello, I'd like to talk about..." 
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={status === 'sending'}
+              className="w-full bg-white text-black font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              {status === 'sending' ? 'Sending...' : (
+                <>
+                  <Send size={20} /> Send Message
+                </>
+              )}
+            </button>
+            {status === 'success' && <p className="text-green-500 text-center mt-4">Message sent successfully!</p>}
+            {status === 'error' && <p className="text-red-500 text-center mt-4">Failed to send message. Try again later.</p>}
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Contact;
