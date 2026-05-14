@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: `${API_BASE_URL}/api`,
 });
 
 api.interceptors.request.use((config) => {
@@ -27,7 +29,7 @@ api.interceptors.response.use(
 export const getImgUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
-  return `http://localhost:8080${path}`;
+  return `${API_BASE_URL}${path}`;
 };
 
 export default api;
