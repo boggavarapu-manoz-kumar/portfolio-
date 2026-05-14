@@ -23,6 +23,7 @@ public class ProfileService {
         profile.setName(dto.getName());
         profile.setTitle(dto.getTitle());
         profile.setBio(dto.getBio());
+        profile.setAboutMe(dto.getAboutMe());
         profile.setYearsOfExperience(dto.getYearsOfExperience());
         profile.setCompletedProjects(dto.getCompletedProjects());
         profile.setHappyClients(dto.getHappyClients());
@@ -41,6 +42,7 @@ public class ProfileService {
         dto.setName(profile.getName());
         dto.setTitle(profile.getTitle());
         dto.setBio(profile.getBio());
+        dto.setAboutMe(profile.getAboutMe());
         dto.setYearsOfExperience(profile.getYearsOfExperience());
         dto.setCompletedProjects(profile.getCompletedProjects());
         dto.setHappyClients(profile.getHappyClients());

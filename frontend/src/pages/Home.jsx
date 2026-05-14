@@ -1,105 +1,185 @@
 import { useState, useEffect } from 'react';
-import { Code, Briefcase, FileText } from 'lucide-react';
+import { Code, Briefcase, FileText, User, Target, Zap } from 'lucide-react';
 import { profileService } from '../services/apiServices';
 import { getImgUrl } from '../api/axiosInstance';
 
 const Home = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(false);
 
   useEffect(() => {
     profileService.get()
       .then(res => {
-        setProfile(res.data?.data || res.data);
+        // axios interceptor unwraps → res = { success, data: {...profile} }
+        const p = res?.data || res;
+        if (p && p.name) setProfile(p);
+        else setError(true);
       })
-      .catch(err => console.error(err))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="text-center py-32 animate-pulse text-gray-500 tracking-widest uppercase">Initializing Portfolio...</div>;
-  if (!profile) return null;
+  if (loading) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'80vh', flexDirection:'column', gap:16 }}>
+      <div style={{ width:40, height:40, borderRadius:'50%', border:'3px solid rgba(255,255,255,0.05)', borderTop:'3px solid #6366f1', animation:'spin 0.8s linear infinite' }} />
+      <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase' }}>Loading Profile...</p>
+      <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
+    </div>
+  );
+
+  if (error || !profile) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh', flexDirection:'column', gap:20 }}>
+      <div style={{ background:'rgba(239,68,68,0.1)', padding:'12px 24px', borderRadius:16, border:'1px solid rgba(239,68,68,0.2)' }}>
+        <p style={{ color:'#f87171', fontSize:14, margin:0 }}>Unable to connect to the backend server.</p>
+      </div>
+      <button onClick={() => window.location.reload()} style={{ padding:'12px 28px', borderRadius:99, cursor:'pointer', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff', fontSize:14, fontWeight:600, transition:'all 0.2s' }} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.05)'}>Retry Connection</button>
+    </div>
+  );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 space-y-32">
-      {/* Welcome Section */}
-      <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 min-h-[60vh]">
-        <div className="flex-1 space-y-6 text-center md:text-left">
-          <p className="text-sm font-semibold tracking-[0.2em] text-gray-400">WELCOME</p>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight">
+    <div style={{ color: '#fff', background: '#0f0f11' }}>
+      
+      {/* ── HERO SECTION ────────────────────────────────────────────── */}
+      <section style={{ 
+        maxWidth: 1200, margin: '0 auto', padding: '100px 24px 120px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 60, flexWrap: 'wrap-reverse', minHeight: '85vh'
+      }}>
+        
+        {/* Left: Content */}
+        <div style={{ flex: '1 1 500px' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(3.5rem, 8vw, 6rem)', fontWeight: 900, 
+            lineHeight: 0.9, letterSpacing: '-0.04em', margin: '0 0 28px',
+            background: 'linear-gradient(135deg, #fff 0%, #a1a1aa 50%, #27272a 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+          }}>
             {profile.name}
           </h1>
-          <h2 className="text-xl sm:text-2xl font-medium text-gray-400">{profile.title}</h2>
-          <p className="text-gray-400 max-w-lg mx-auto md:mx-0 leading-relaxed pt-2 text-base sm:text-lg">
+
+          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:32 }}>
+            <div style={{ height:2, width:40, background:'#6366f1', borderRadius:99 }} />
+            <span style={{ fontSize:24, fontWeight:600, color:'rgba(255,255,255,0.7)', letterSpacing:'-0.02em' }}>{profile.title}</span>
+          </div>
+
+          <p style={{ 
+            fontSize:20, lineHeight:1.6, color:'rgba(255,255,255,0.45)', 
+            maxWidth:540, margin:'0 0 48px', fontWeight:400
+          }}>
             {profile.bio}
           </p>
-          <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
             {profile.githubLink && (
-              <a href={profile.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a1a1c] border border-gray-800 hover:border-gray-600 hover:bg-[#222225] transition-all text-sm font-medium">
+              <a href={profile.githubLink} target="_blank" rel="noreferrer" style={{ 
+                display:'flex', alignItems:'center', gap:10, padding:'16px 32px', 
+                borderRadius:16, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+                color:'#fff', fontSize:15, fontWeight:600, textDecoration:'none', transition:'all 0.3s'
+              }} onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.2)';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)';}}>
                 <Code size={18} /> GitHub
               </a>
             )}
             {profile.linkedinLink && (
-              <a href={profile.linkedinLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a1a1c] border border-gray-800 hover:border-gray-600 hover:bg-[#222225] transition-all text-sm font-medium">
+              <a href={profile.linkedinLink} target="_blank" rel="noreferrer" style={{ 
+                display:'flex', alignItems:'center', gap:10, padding:'16px 32px', 
+                borderRadius:16, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+                color:'#fff', fontSize:15, fontWeight:600, textDecoration:'none', transition:'all 0.3s'
+              }} onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.2)';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)';}}>
                 <Briefcase size={18} /> LinkedIn
               </a>
             )}
             {profile.resumeLink && (
-              <a href={profile.resumeLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a1a1c] border border-gray-800 hover:border-gray-600 hover:bg-[#222225] transition-all text-sm font-medium">
+              <a href={profile.resumeLink} target="_blank" rel="noreferrer" style={{ 
+                display:'flex', alignItems:'center', gap:10, padding:'16px 36px', 
+                borderRadius:16, background:'#fff', color:'#000',
+                fontSize:15, fontWeight:700, textDecoration:'none', transition:'all 0.3s'
+              }} onMouseEnter={e=>e.currentTarget.style.background='#e2e8f0'} onMouseLeave={e=>e.currentTarget.style.background='#fff'}>
                 <FileText size={18} /> Resume
               </a>
             )}
           </div>
         </div>
-        <div className="flex-1 w-full max-w-[450px] md:max-w-none flex justify-center md:justify-end">
-          <div className="w-full max-w-[400px] aspect-[4/4.5] bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl overflow-hidden shadow-2xl relative border border-gray-800/50">
-            <div className="absolute inset-0 bg-[#1a1a1c] flex items-center justify-center text-gray-600">
-               <img 
-                 src={getImgUrl(profile.profileImage || "/uploads/images/profile.jpg")} 
-                 alt={profile.name} 
-                 className="w-full h-full object-cover opacity-90 transition-opacity hover:opacity-100" 
-                 onError={(e) => {
-                   e.target.style.display='none';
-                   e.target.nextSibling.style.display='flex';
-                 }} 
-               />
-               <span className="text-sm font-bold uppercase tracking-widest text-gray-700">Profile Image</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* About Section */}
-      <section className="flex flex-col items-center py-12">
-        <div className="text-center space-y-4 mb-16 px-4">
-          <p className="text-sm font-semibold tracking-[0.2em] text-gray-400">ABOUT ME</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white">My Journey</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto pt-4 leading-relaxed text-sm sm:text-base">
-            Professional overview and technical focus areas.
-          </p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 w-full">
-          <div className="flex-1 space-y-6 text-gray-400 leading-relaxed whitespace-pre-line text-sm sm:text-base px-2">
-            {profile.bio}
-          </div>
+        {/* Right: Visual */}
+        <div style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center', position: 'relative' }}>
           
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="sm:col-span-2 bg-[#1a1a1c] border border-gray-800 rounded-3xl p-8 hover:bg-[#1f1f22] transition-all hover:border-gray-700">
-              <p className="text-xs text-gray-500 font-semibold tracking-wider mb-2 uppercase">Core Philosophy</p>
-              <h3 className="text-xl font-bold text-white">Engineering Real-World Solutions</h3>
-              <p className="text-sm text-gray-500 mt-2">Focused on building practical, secure, and maintainable systems.</p>
-            </div>
-            <div className="bg-[#1a1a1c] border border-gray-800 rounded-3xl p-8 flex flex-col justify-center hover:bg-[#1f1f22] transition-all hover:border-gray-700">
-              <h3 className="text-4xl font-bold text-white mb-2">{profile.yearsOfExperience}<span className="text-blue-500">+</span></h3>
-              <p className="text-sm text-gray-400 font-medium">Years of Active Development</p>
-            </div>
-            <div className="bg-[#1a1a1c] border border-gray-800 rounded-3xl p-8 flex flex-col justify-center hover:bg-[#1f1f22] transition-all hover:border-gray-700">
-              <h3 className="text-4xl font-bold text-white mb-2">{profile.completedProjects}<span className="text-green-500">+</span></h3>
-              <p className="text-sm text-gray-400 font-medium">Project Milestones Reached</p>
+          <div style={{ 
+            position:'relative', zIndex:1, width:'min(400px, 85vw)', aspectRatio:'1/1.2',
+            borderRadius:40, overflow:'hidden', background:'#18181c', border:'1px solid rgba(255,255,255,0.08)',
+            boxShadow:'0 40px 80px -20px rgba(0,0,0,0.6)'
+          }}>
+            <img 
+              src={getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')} 
+              alt={profile.name}
+              style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'top' }}
+              onError={e=>{e.target.style.display='none';}}
+            />
+            
+            {/* Minimal overlay info */}
+            <div style={{ 
+              position:'absolute', bottom:0, left:0, right:0, padding:'60px 32px 32px',
+              background:'linear-gradient(to top, rgba(0,0,0,0.9), transparent)'
+            }}>
+              <p style={{ margin:0, fontSize:22, fontWeight:800, letterSpacing:'-0.02em' }}>{profile.name}</p>
+              <p style={{ margin:0, fontSize:14, color:'rgba(255,255,255,0.5)', fontWeight:600 }}>{profile.title}</p>
             </div>
           </div>
+
         </div>
       </section>
+
+      {/* ── ABOUT ME SECTION ─────────────────────────────────────────── */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px 140px' }} id="about">
+        
+        <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <div style={{ 
+            display:'inline-flex', alignItems:'center', gap:10, marginBottom:16,
+            background:'rgba(99,102,241,0.05)', border:'1px solid rgba(99,102,241,0.1)',
+            borderRadius:99, padding:'6px 16px'
+          }}>
+             <User size={14} color="#6366f1" />
+             <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.2em', color:'#818cf8', textTransform:'uppercase' }}>Get to know me</span>
+          </div>
+          <h2 style={{ fontSize:'clamp(2.2rem, 5vw, 3.5rem)', fontWeight:800, margin:0, letterSpacing:'-0.03em' }}>About Me</h2>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 450px), 1fr))', gap: 32 }}>
+          
+          {/* Bio / Story Card */}
+          <div style={{ 
+            background:'rgba(255,255,255,0.01)', border:'1px solid rgba(255,255,255,0.05)',
+            borderRadius:32, padding:'40px 48px', display:'flex', flexDirection:'column', justifyContent:'center'
+          }}>
+            <div style={{ fontSize:18, lineHeight:1.8, color:'rgba(255,255,255,0.5)', whiteSpace:'pre-line', fontWeight:400 }}>
+              {profile.aboutMe || profile.bio || "Updating my story..."}
+            </div>
+          </div>
+
+          {/* Details Grid - Stats Card */}
+          <div style={{ 
+            background:'rgba(255,255,255,0.01)', border:'1px solid rgba(255,255,255,0.04)',
+            borderRadius:32, padding:48, display:'flex', flexDirection:'column', justifyContent:'center', gap:40
+          }}>
+            
+            <div style={{ textAlign:'center' }}>
+              <div style={{ fontSize:48, fontWeight:900, color:'#fff', marginBottom:4, letterSpacing:'-0.02em' }}>{profile.yearsOfExperience}+</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', textTransform:'uppercase', fontWeight:800, letterSpacing:'0.2em' }}>Years of Experience</div>
+            </div>
+
+            <div style={{ height:1, background:'rgba(255,255,255,0.04)', width:'40%', margin:'0 auto' }} />
+
+            <div style={{ textAlign:'center' }}>
+              <div style={{ fontSize:48, fontWeight:900, color:'#fff', marginBottom:4, letterSpacing:'-0.02em' }}>{profile.completedProjects}+</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', textTransform:'uppercase', fontWeight:800, letterSpacing:'0.2em' }}>Projects Completed</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
     </div>
   );
 };

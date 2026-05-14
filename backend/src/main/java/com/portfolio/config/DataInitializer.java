@@ -78,6 +78,7 @@ public class DataInitializer {
                 profile.setName("Balaji Sudarshan Reddy");
                 profile.setTitle("MERN Stack Developer");
                 profile.setBio("Building scalable web applications with modern technologies. Passionate about clean code, user experience, and solving real-world problems.");
+                profile.setAboutMe("I am a passionate developer with a strong focus on creating intuitive and efficient user experiences. My journey in tech started with a curiosity for how things work, which evolved into a career dedicated to building robust software solutions.");
                 profile.setYearsOfExperience(2);
                 profile.setCompletedProjects(10);
                 profile.setHappyClients(5);

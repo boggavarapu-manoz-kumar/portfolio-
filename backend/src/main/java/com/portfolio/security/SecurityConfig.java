@@ -34,6 +34,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 // Require authentication for all other requests (POST, PUT, DELETE)
                 .anyRequest().authenticated()

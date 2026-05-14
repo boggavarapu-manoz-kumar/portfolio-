@@ -37,8 +37,8 @@ const Contact = () => {
             </div>
             <div>
               <p className="text-sm text-gray-400 mb-1">Email</p>
-              <a href="mailto:Kondreddy2007@gmail.com" className="text-white font-medium hover:text-blue-400 transition-colors">
-                Kondreddy2007@gmail.com
+              <a href="mailto:manozkumarboggavarapu@gmail.com" className="text-white font-medium hover:text-blue-400 transition-colors">
+                manozkumarboggavarapu@gmail.com
               </a>
             </div>
           </div>
@@ -49,8 +49,8 @@ const Contact = () => {
             </div>
             <div>
               <p className="text-sm text-gray-400 mb-1">Instagram</p>
-              <a href="https://instagram.com/balaji_sudarshanreddy" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-pink-500 transition-colors">
-                balaji_sudarshanreddy
+              <a href="https://instagram.com/ft.manoz" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-pink-500 transition-colors">
+                ft.manoz
               </a>
             </div>
           </div>
@@ -61,8 +61,8 @@ const Contact = () => {
             </div>
             <div>
               <p className="text-sm text-gray-400 mb-1">LinkedIn</p>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-blue-500 transition-colors">
-                Balaji Sudarshan Reddy
+              <a href="https://www.linkedin.com/in/manojboggavarapu/" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-blue-500 transition-colors">
+                MANOJ BOGGAVARAPU
               </a>
             </div>
           </div>

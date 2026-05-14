@@ -36,7 +36,7 @@ const getDevIconUrl = (name) => {
 
   const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
   const iconName = iconMap[name.toLowerCase().trim()] || cleanName;
-  
+
   return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
 };
 
@@ -85,7 +85,7 @@ const Skills = () => {
         {categories.map(category => {
           const categorySkills = groupedSkills[category];
           if (!categorySkills || categorySkills.length === 0) return null;
-          
+
           return (
             <div key={category} className="bg-[#1a1a1c] border border-gray-800 rounded-3xl p-6 sm:p-10 hover:bg-[#1f1f22] transition-all hover:border-gray-700 flex flex-col h-full shadow-xl shadow-black/20">
               <div className="flex items-center justify-between mb-8">
@@ -96,10 +96,10 @@ const Skills = () => {
                 {categorySkills.map(skill => (
                   <div key={skill.id} className="flex items-center gap-4 bg-[#141416] border border-gray-800/50 p-4 rounded-2xl hover:bg-[#1a1a1c] transition-all group">
                     <div className="w-12 h-12 rounded-xl bg-gray-900/80 flex items-center justify-center p-2.5 relative overflow-hidden border border-gray-800 group-hover:border-blue-500/50 transition-colors">
-                      <img 
-                        src={skill.logo || getDevIconUrl(skill.name)} 
-                        alt={skill.name} 
-                        className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-110" 
+                      <img
+                        src={skill.logo || getDevIconUrl(skill.name)}
+                        alt={skill.name}
+                        className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-110"
                         onError={(e) => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';

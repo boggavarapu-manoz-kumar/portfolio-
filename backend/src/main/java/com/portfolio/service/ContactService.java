@@ -15,6 +15,9 @@ public class ContactService {
     @Autowired
     private ContactRepository contactRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public List<ContactDto> getAllContacts() {
         return contactRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
@@ -33,6 +36,16 @@ public class ContactService {
         contact.setMessage(dto.getMessage());
         
         Contact savedContact = contactRepository.save(contact);
+        
+        // Try to send email but don't block if it fails
+        try {
+            String subject = "New Contact Message from " + dto.getName();
+            String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
+            emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
+        } catch (Exception e) {
+            System.err.println("Failed to send contact email: " + e.getMessage());
+        }
+
         return mapToDto(savedContact);
     }
 

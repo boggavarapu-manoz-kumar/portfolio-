@@ -27,7 +27,7 @@ export const blogService = {
 };
 
 export const contactService = {
-  create: (data) => api.post('/contact', data),
+  create: (data) => api.post('/contacts', data),
 };
 
 export const resumeService = {
