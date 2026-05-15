@@ -37,16 +37,25 @@ public class ContactService {
         
         Contact savedContact = contactRepository.save(contact);
         
-        // INSTANT RESPONSE: Send email in a separate background thread so the user doesn't wait
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            try {
-                String subject = "New Portfolio Message: " + dto.getName();
-                String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
-                emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
-            } catch (Exception e) {
-                System.err.println("Background email task failed: " + e.getMessage());
-            }
-        });
+        // ULTIMATE OPTIMIZATION: Use dedicated high-priority thread pool for instant mail processing
+        try {
+            org.springframework.context.ApplicationContext context = com.portfolio.PortfolioApplication.getContext();
+            java.util.concurrent.Executor executor = (java.util.concurrent.Executor) context.getBean("taskExecutor");
+            executor.execute(() -> {
+                try {
+                    String subject = "New Portfolio Message: " + dto.getName();
+                    String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
+                    emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
+                } catch (Exception e) {
+                    System.err.println("High-priority email task failed: " + e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            // Fallback to default async if bean not found for some reason
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                emailService.sendEmail("manozkumarboggavarapu@gmail.com", "Message from " + dto.getName(), dto.getMessage());
+            });
+        }
 
         return mapToDto(savedContact);
     }
