@@ -78,6 +78,9 @@ const AdminDashboard = () => {
       } else if (activeTab === 'profile') {
         const res = await profileService.get();
         setProfileForm(res.data?.data || res.data);
+      } else if (activeTab === 'messages') {
+        const res = await contactService.getAll();
+        setMessages(res.data?.data || res.data || []);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
