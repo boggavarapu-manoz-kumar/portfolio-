@@ -4,9 +4,9 @@ const SEO = ({ title, description, image, url, type = 'website' }) => {
   const siteTitle = "Manoj Boggavarapu | Java Full Stack Developer Portfolio";
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
   const siteDescription = description || "Manoj Boggavarapu Portfolio - Java Full Stack Developer skilled in Spring Boot, React, AI & ML projects.";
-  const siteUrl = "https://manozz.site";
-  const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
-  const siteImage = image || `${siteUrl}/og-image.png`;
+  const siteUrl = "https://manozz.site/";
+  const fullUrl = url ? `${siteUrl}${url.startsWith('/') ? url.slice(1) : url}` : siteUrl;
+  const siteImage = image || `${siteUrl}og-image.png`;
 
   return (
     <Helmet>
