@@ -87,7 +87,7 @@ const Navbar = () => {
                     fontSize: 11, fontWeight: 800,
                     letterSpacing: '0.12em', textTransform: 'uppercase',
                     textDecoration: 'none', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    color: isActive ? '#fff' : 'rgba(255,255,255,0.7)',
+                    color: isActive ? '#fff' : 'rgba(255,255,255,0.85)',
                     background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
                     border: `1px solid ${isActive ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
                   }}
@@ -149,7 +149,7 @@ const Navbar = () => {
                   fontSize: 14, fontWeight: 700,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
                   textDecoration: 'none', transition: 'all 0.3s ease',
-                  color: isActive ? '#fff' : 'rgba(255,255,255,0.7)',
+                  color: isActive ? '#fff' : 'rgba(255,255,255,0.85)',
                   background: isActive ? 'rgba(255,255,255,0.05)' : 'transparent',
                   border: `1px solid ${isActive ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
                   display: 'flex',

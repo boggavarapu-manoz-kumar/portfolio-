@@ -154,20 +154,20 @@ const Blog = () => {
                      fontSize: 14, fontWeight: 800, color: '#fff', transition: 'all 0.4s'
                    }}>M</div>
                    <div>
-                     <h4 style={{ margin: 0, color: isFocused ? '#fff' : '#666', fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Manoj Kumar</h4>
-                     <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'Recent'}</p>
-                   </div>
+                      <div style={{ margin: 0, color: isFocused ? '#fff' : 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Manoj Kumar</div>
+                      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'Recent'}</p>
+                    </div>
                 </div>
 
                 <h3 style={{ 
-                  fontSize: 26, fontWeight: 900, color: isFocused ? '#fff' : '#555', 
+                  fontSize: 26, fontWeight: 900, color: isFocused ? '#fff' : 'rgba(255,255,255,0.7)', 
                   margin: '0 0 16px', lineHeight: 1.2, letterSpacing: '-0.02em',
                   transition: 'all 0.4s'
                 }}>{blog.title}</h3>
                 
                 <p style={{ 
                   fontSize: 15, lineHeight: 1.7, 
-                  color: isFocused ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)', 
+                  color: isFocused ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.6)', 
                   margin: 0, display: '-webkit-box', WebkitLineClamp: 4, 
                   WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   transition: 'all 0.4s'
@@ -178,7 +178,7 @@ const Blog = () => {
 
               <div style={{ 
                 display: 'flex', alignItems: 'center', gap: 8, 
-                color: isFocused ? '#6366f1' : '#444', 
+                color: isFocused ? '#6366f1' : 'rgba(255,255,255,0.8)', 
                 fontSize: 12, fontWeight: 800, textTransform: 'uppercase', 
                 letterSpacing: '0.1em', marginTop: 32, transition: 'all 0.4s'
               }}>

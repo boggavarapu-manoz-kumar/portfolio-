@@ -166,7 +166,7 @@ const Home = () => {
           </div>
 
           <p style={{
-            fontSize: 20, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)',
+            fontSize: 20, lineHeight: 1.6, color: 'rgba(255,255,255,0.85)',
             maxWidth: 540, margin: '0 0 48px', fontWeight: 400
           }}>
             {profile.bio}
@@ -258,7 +258,7 @@ const Home = () => {
             background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)',
             borderRadius: 32, padding: '40px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
           }}>
-            <div style={{ fontSize: 18, lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', whiteSpace: 'pre-line', fontWeight: 400 }}>
+            <div style={{ fontSize: 18, lineHeight: 1.8, color: 'rgba(255,255,255,0.85)', whiteSpace: 'pre-line', fontWeight: 400 }}>
               {profile.aboutMe || profile.bio || "Updating my story..."}
             </div>
           </div>
@@ -271,14 +271,14 @@ const Home = () => {
 
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.02em' }}>{profile.yearsOfExperience}+</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Years of Experience</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Years of Experience</div>
             </div>
 
             <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', width: '40%', margin: '0 auto' }} />
 
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.02em' }}>{profile.completedProjects}+</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Projects Completed</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Projects Completed</div>
             </div>
 
           </div>

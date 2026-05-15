@@ -139,15 +139,15 @@ const Projects = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className={`text-3xl font-black tracking-tighter transition-colors duration-500 ${isFocused ? 'text-white' : 'text-gray-500'}`}>
+                  <h3 className={`text-3xl font-black tracking-tighter transition-colors duration-500 ${isFocused ? 'text-white' : 'text-gray-300'}`}>
                     {project.title}
                   </h3>
-                  <p className={`text-sm leading-relaxed font-medium transition-colors duration-500 ${isFocused ? 'text-gray-300' : 'text-gray-400'} line-clamp-3`}>
+                  <p className={`text-sm leading-relaxed font-medium transition-colors duration-500 ${isFocused ? 'text-gray-200' : 'text-gray-300'} line-clamp-3`}>
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-4">
                     {project.techStack?.split(',').map(tech => (
-                      <span key={tech} className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border transition-all duration-500 ${isFocused ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/5 text-gray-600'}`}>
+                      <span key={tech} className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border transition-all duration-500 ${isFocused ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/10 text-gray-200'}`}>
                         {tech.trim()}
                       </span>
                     ))}
