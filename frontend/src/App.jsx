@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import SinglePage from './pages/SinglePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import GoogleAnalytics from './components/GoogleAnalytics';
-import WhatsAppButton from './components/WhatsAppButton';
 
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -39,7 +38,6 @@ function App() {
               </Routes>
             </Suspense>
           </main>
-          <WhatsAppButton />
         </div>
       </Router>
     </HelmetProvider>
