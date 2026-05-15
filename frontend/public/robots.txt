@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.manozz.site/sitemap.xml
+Sitemap: https://manozz.site/sitemap.xml
