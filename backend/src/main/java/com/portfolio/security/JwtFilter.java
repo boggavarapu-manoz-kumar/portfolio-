@@ -2,7 +2,6 @@ package com.portfolio.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.dto.ApiResponse;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,7 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException | Exception e) {
+        } catch (Exception e) {
             // If the token is bad/expired on a GET (public) request, ignore it and continue.
             // If it's an admin request (POST/PUT/DELETE), block it.
             if ("GET".equalsIgnoreCase(method)) {
