@@ -23,7 +23,7 @@ const Contact = () => {
       <div className="text-center space-y-4 mb-16">
         <p className="text-sm font-semibold tracking-[0.2em] text-gray-400">CONTACT</p>
         <h2 className="text-4xl md:text-5xl font-bold text-white">Get in Touch</h2>
-        <p className="text-gray-400 max-w-2xl mx-auto pt-4 leading-relaxed">
+        <p className="text-gray-300 max-w-2xl mx-auto pt-4 leading-relaxed">
           I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
         </p>
       </div>
@@ -72,9 +72,10 @@ const Contact = () => {
         <div className="flex-[1.2] bg-[#1a1a1c] border border-gray-800 rounded-3xl p-8 md:p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Name</label>
+              <label htmlFor="name" className="text-sm font-medium text-gray-300">Name</label>
               <input 
                 required 
+                id="name"
                 type="text" 
                 value={form.name} 
                 onChange={e => setForm({...form, name: e.target.value})}
@@ -83,9 +84,10 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Email</label>
+              <label htmlFor="email" className="text-sm font-medium text-gray-300">Email</label>
               <input 
                 required 
+                id="email"
                 type="email" 
                 value={form.email} 
                 onChange={e => setForm({...form, email: e.target.value})}
@@ -94,9 +96,10 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Message</label>
+              <label htmlFor="message" className="text-sm font-medium text-gray-300">Message</label>
               <textarea 
                 required 
+                id="message"
                 value={form.message} 
                 onChange={e => setForm({...form, message: e.target.value})}
                 className="w-full bg-[#0f0f11] border border-gray-800 rounded-xl p-4 text-white focus:outline-none focus:border-gray-500 transition-colors h-32 resize-none" 

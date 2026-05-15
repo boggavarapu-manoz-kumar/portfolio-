@@ -102,6 +102,7 @@ const Navbar = () => {
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
             style={{
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',

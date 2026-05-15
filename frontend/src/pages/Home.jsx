@@ -173,8 +173,7 @@ const Home = () => {
           </p>
 
           <div className="hero-buttons" style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-            {profile.githubLink && (
-              <a href={profile.githubLink} target="_blank" rel="noreferrer" style={{
+              <a href={profile.githubLink} target="_blank" rel="noreferrer" aria-label="GitHub Profile" style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '16px 32px',
                 borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
                 color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none', transition: 'all 0.3s'
@@ -183,7 +182,7 @@ const Home = () => {
               </a>
             )}
             {profile.linkedinLink && (
-              <a href={profile.linkedinLink} target="_blank" rel="noreferrer" style={{
+              <a href={profile.linkedinLink} target="_blank" rel="noreferrer" aria-label="LinkedIn Profile" style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '16px 32px',
                 borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
                 color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none', transition: 'all 0.3s'
@@ -214,6 +213,7 @@ const Home = () => {
             <img
               src={getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
               alt={profile.name}
+              fetchpriority="high"
               style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
               onError={e => { e.target.style.display = 'none'; }}
             />

@@ -89,7 +89,7 @@ const Skills = () => {
           return (
             <div key={category} className="bg-[#1a1a1c] border border-gray-800 rounded-3xl p-6 sm:p-10 hover:bg-[#1f1f22] transition-all hover:border-gray-700 flex flex-col h-full shadow-xl shadow-black/20">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-sm font-bold text-gray-500 tracking-[0.2em] uppercase">{category}</h3>
+                <h3 className="text-sm font-bold text-gray-400 tracking-[0.2em] uppercase">{category}</h3>
                 <div className="h-[1px] flex-1 bg-gray-800/50 ml-6"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -112,7 +112,7 @@ const Skills = () => {
                     <div className="flex flex-col">
                       <span className="text-white font-semibold text-base group-hover:text-blue-400 transition-colors">{skill.name}</span>
                       {skill.level && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-0.5">
                           {skill.level}
                         </span>
                       )}

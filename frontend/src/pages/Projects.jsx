@@ -67,12 +67,14 @@ const Projects = () => {
       <div className="hidden md:flex absolute top-1/2 left-0 right-0 -translate-y-1/2 justify-between px-12 pointer-events-none z-20">
         <button 
           onClick={() => scroll('left')}
+          aria-label="Previous Project"
           className="p-5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:bg-indigo-500 transition-all active:scale-90 pointer-events-auto shadow-2xl group"
         >
           <ChevronLeft size={28} className="group-hover:-translate-x-1 transition-transform" />
         </button>
         <button 
           onClick={() => scroll('right')}
+          aria-label="Next Project"
           className="p-5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:bg-indigo-500 transition-all active:scale-90 pointer-events-auto shadow-2xl group"
         >
           <ChevronRight size={28} className="group-hover:translate-x-1 transition-transform" />
@@ -121,16 +123,26 @@ const Projects = () => {
             >
               <div className="space-y-8">
                 {/* Coin Icon */}
+                {/* Project Image / Icon */}
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center relative transition-all duration-500 ${isFocused ? 'bg-indigo-500 text-white rotate-[360deg]' : 'bg-white/5 text-gray-500'}`}>
                    <div className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-500 ${isFocused ? 'bg-indigo-500/50 opacity-100' : 'opacity-0'}`}></div>
-                   <Code size={28} className="relative z-10" />
+                   {project.image ? (
+                     <img 
+                       src={project.image} 
+                       alt="" 
+                       loading="lazy"
+                       className="w-full h-full rounded-full object-cover relative z-10" 
+                     />
+                   ) : (
+                     <Code size={28} className="relative z-10" />
+                   )}
                 </div>
 
                 <div className="space-y-4">
                   <h3 className={`text-3xl font-black tracking-tighter transition-colors duration-500 ${isFocused ? 'text-white' : 'text-gray-500'}`}>
                     {project.title}
                   </h3>
-                  <p className={`text-sm leading-relaxed font-medium transition-colors duration-500 ${isFocused ? 'text-gray-400' : 'text-gray-600'} line-clamp-3`}>
+                  <p className={`text-sm leading-relaxed font-medium transition-colors duration-500 ${isFocused ? 'text-gray-300' : 'text-gray-400'} line-clamp-3`}>
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-4">
