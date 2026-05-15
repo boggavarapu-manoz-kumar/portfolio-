@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Briefcase, FileText, Code, Plus, Trash2, Edit2 } from 'lucide-react';
-import { projectsService, skillsService, profileService, uploadService, blogService } from '../services/apiServices';
+import { LogOut, LayoutDashboard, Briefcase, FileText, Code, Plus, Trash2, Edit2, Mail } from 'lucide-react';
+import { projectsService, skillsService, profileService, uploadService, blogService, contactService } from '../services/apiServices';
 import PhotoEditor from '../components/PhotoEditor';
 import { getImgUrl } from '../api/axiosInstance';
 
@@ -29,6 +29,7 @@ const AdminDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [messages, setMessages] = useState([]);
 
   // Form States
   const [projectForm, setProjectForm] = useState({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
@@ -53,16 +54,18 @@ const AdminDashboard = () => {
     try {
       // In Overview or specific tabs, we might need all data for counts
       if (activeTab === 'overview') {
-        const [projRes, skillRes, blogRes, profRes] = await Promise.all([
+        const [projRes, skillRes, blogRes, profRes, msgRes] = await Promise.all([
           projectsService.getAll(),
           skillsService.getAll(),
           blogService.getAll(),
-          profileService.get()
+          profileService.get(),
+          contactService.getAll()
         ]);
         setProjects(projRes.data?.data || projRes.data || []);
         setSkills(skillRes.data?.data || skillRes.data || []);
         setBlogs(blogRes.data?.data || blogRes.data || []);
         setProfileForm(profRes.data?.data || profRes.data);
+        setMessages(msgRes.data?.data || msgRes.data || []);
       } else if (activeTab === 'projects') {
         const res = await projectsService.getAll();
         setProjects(res.data?.data || res.data || []);
@@ -185,6 +188,18 @@ const AdminDashboard = () => {
     setBlogForm({ title: b.title, content: b.content });
   };
 
+  const deleteMessage = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      await contactService.delete(id);
+      alert("Message deleted!");
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed.");
+    }
+  };
+
   const deleteBlog = async (id) => {
     if (!window.confirm("Delete blog?")) return;
     try {
@@ -262,6 +277,9 @@ const AdminDashboard = () => {
           </button>
           <button onClick={() => { setActiveTab('profile'); setEditingId(null); }} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl font-medium transition-colors ${activeTab === 'profile' ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 text-slate-300'}`}>
             <LayoutDashboard size={20} /> Manage Profile
+          </button>
+          <button onClick={() => { setActiveTab('messages'); setEditingId(null); }} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl font-medium transition-colors ${activeTab === 'messages' ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 text-slate-300'}`}>
+            <Mail size={20} /> Messages
           </button>
         </nav>
         <button onClick={handleLogout} className="mt-auto flex items-center gap-3 text-red-400 hover:text-red-300 px-4 py-3 font-medium transition-colors">
@@ -509,6 +527,40 @@ const AdminDashboard = () => {
           </>
         )}
 
+        {activeTab === 'messages' && (
+          <div className="space-y-6">
+            <h1 className="text-2xl font-bold text-white mb-6">Contact Messages</h1>
+            <div className="space-y-4">
+              {messages.length === 0 ? (
+                <div className="text-center py-12 bg-slate-900 rounded-3xl border border-slate-700">
+                  <Mail size={48} className="mx-auto text-slate-600 mb-4 opacity-20" />
+                  <p className="text-slate-500">No messages yet. They will appear here when someone contacts you!</p>
+                </div>
+              ) : (
+                messages.map((msg) => (
+                  <div key={msg.id} className="bg-slate-900 p-6 rounded-3xl border border-slate-700 hover:border-slate-600 transition-all group">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">{msg.name}</h3>
+                        <p className="text-blue-400 text-sm">{msg.email}</p>
+                        <p className="text-slate-500 text-xs mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
+                      </div>
+                      <button 
+                        onClick={() => deleteMessage(msg.id)}
+                        className="p-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl transition-all"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                    <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50">
+                      <p className="text-slate-300 whitespace-pre-wrap">{msg.message}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
       </main>
 
       {showEditor && (

@@ -25,8 +25,10 @@ public class CorsConfig {
                 registry.addInterceptor(new org.springframework.web.servlet.HandlerInterceptor() {
                     @Override
                     public boolean preHandle(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, Object handler) {
-                        if (request.getMethod().equals("GET") && !request.getRequestURI().contains("/auth")) {
-                            response.setHeader("Cache-Control", "public, max-age=300"); // Cache for 5 minutes!
+                        if (request.getMethod().equals("GET") && request.getRequestURI().startsWith("/api/")) {
+                            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                        } else if (request.getMethod().equals("GET")) {
+                            response.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for static assets
                         }
                         return true;
                     }

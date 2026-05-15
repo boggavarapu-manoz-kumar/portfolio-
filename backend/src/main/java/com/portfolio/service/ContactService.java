@@ -37,9 +37,14 @@ public class ContactService {
         
         Contact savedContact = contactRepository.save(contact);
         
-        String subject = "New Contact Message from " + dto.getName();
-        String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
-        emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
+        // Try to send email but don't fail the request if Gmail is being annoying
+        try {
+            String subject = "New Contact Message from " + dto.getName();
+            String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
+            emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
+        } catch (Exception e) {
+            System.err.println("Email notification failed: " + e.getMessage());
+        }
 
         return mapToDto(savedContact);
     }
