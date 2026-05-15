@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import SinglePage from './pages/SinglePage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,27 +16,30 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-[#0f0f11] text-gray-100 flex flex-col font-sans">
-        <Navbar />
-        <main className="flex-grow">
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<SinglePage />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <div className="min-h-screen bg-[#0f0f11] text-gray-100 flex flex-col font-sans">
+          <Navbar />
+          <main className="flex-grow">
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<SinglePage />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </main>
+          <WhatsAppButton />
+        </div>
+      </Router>
+    </HelmetProvider>
   );
 }
 

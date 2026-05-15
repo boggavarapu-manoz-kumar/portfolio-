@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Code, Briefcase, FileText, User, Target, Zap } from 'lucide-react';
 import { profileService } from '../services/apiServices';
 import { getImgUrl } from '../api/axiosInstance';
+import SEO from '../components/SEO';
 
 const Home = () => {
   const [profile, setProfile] = useState(null);
@@ -39,6 +40,13 @@ const Home = () => {
 
   return (
     <div style={{ color: '#fff', background: '#0f0f11' }} className="home-container">
+      {profile && (
+        <SEO 
+          title={`${profile.name} | ${profile.title}`} 
+          description={profile.bio}
+          image={profile.profileImage}
+        />
+      )}
       <style>{`
         .hero-section {
           maxWidth: 1200px;
