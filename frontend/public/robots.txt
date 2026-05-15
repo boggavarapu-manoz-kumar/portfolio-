@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://manoz.vercel.app/sitemap.xml
+Sitemap: https://www.manozz.site/sitemap.xml
