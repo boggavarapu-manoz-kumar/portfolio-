@@ -14,10 +14,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
+                        .allowedOriginPatterns(
                             "https://www.manozz.site",
                             "https://manozz.site",
-                            "https://manoz.vercel.app",
+                            "https://*.manozz.site",
+                            "https://*.vercel.app",
                             "http://localhost:5173"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
