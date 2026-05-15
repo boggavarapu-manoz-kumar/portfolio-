@@ -33,6 +33,12 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/profile/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/skills/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resume/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/contacts/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
