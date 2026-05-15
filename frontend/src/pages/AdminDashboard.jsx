@@ -129,14 +129,17 @@ const AdminDashboard = () => {
     try {
       if (editingId) {
         await skillsService.update(editingId, skillForm);
+        alert("Skill updated successfully!");
       } else {
         await skillsService.create(skillForm);
+        alert("Skill added successfully!");
       }
       setSkillForm({ name: '', level: 'Beginner', category: 'WEB BASICS', logo: '' });
       setEditingId(null);
       fetchData();
     } catch (error) {
       console.error(error);
+      alert("Skill operation failed: " + (error.response?.data?.message || "Check your connection."));
     }
   };
 
@@ -163,14 +166,17 @@ const AdminDashboard = () => {
     try {
       if (editingId) {
         await blogService.update(editingId, blogForm);
+        alert("Blog updated!");
       } else {
         await blogService.create(blogForm);
+        alert("Blog published!");
       }
       setBlogForm({ title: '', content: '' });
       setEditingId(null);
       fetchData();
     } catch (error) {
       console.error(error);
+      alert("Blog operation failed.");
     }
   };
 
