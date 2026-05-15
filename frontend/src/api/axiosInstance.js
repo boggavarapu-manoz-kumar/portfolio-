@@ -8,7 +8,11 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
+  const method = config.method?.toUpperCase();
+  // Only attach token for non-GET (admin) requests.
+  // GET requests are public and must NOT send a stale/invalid token
+  // which would trigger a 401 from the backend.
+  if (token && method !== 'GET') {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -17,10 +21,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // Navigate to login or handle unauth globally
     if (error.response?.status === 401) {
+      // Clear any stale token immediately
       localStorage.removeItem('token');
-      // window.location.href = '/login';
     }
     return Promise.reject(error);
   }

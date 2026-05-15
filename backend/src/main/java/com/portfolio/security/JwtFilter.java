@@ -32,32 +32,40 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         final String authorizationHeader = request.getHeader("Authorization");
+        final String method = request.getMethod();
 
         String username = null;
         String jwt = null;
 
+        // If no token is present, just continue — public routes are handled by SecurityConfig
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                jwt = authorizationHeader.substring(7);
-                username = jwtUtil.extractUsername(jwt);
-            }
+            jwt = authorizationHeader.substring(7);
+            username = jwtUtil.extractUsername(jwt);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
                 if (jwtUtil.validateToken(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            handleException(response, "JWT Token has expired");
-        } catch (Exception e) {
-            handleException(response, "Invalid JWT Token");
+        } catch (ExpiredJwtException | Exception e) {
+            // If the token is bad/expired on a GET (public) request, ignore it and continue.
+            // If it's an admin request (POST/PUT/DELETE), block it.
+            if ("GET".equalsIgnoreCase(method)) {
+                filterChain.doFilter(request, response);
+            } else {
+                handleException(response, "JWT Token is expired or invalid");
+            }
         }
     }
 
