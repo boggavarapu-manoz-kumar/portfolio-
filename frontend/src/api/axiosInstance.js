@@ -24,6 +24,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Clear any stale token immediately
       localStorage.removeItem('token');
+      // Redirect to login if in admin area
+      if (window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }

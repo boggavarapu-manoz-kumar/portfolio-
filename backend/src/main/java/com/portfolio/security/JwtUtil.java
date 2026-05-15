@@ -16,7 +16,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final String SECRET_STRING = "your-very-secure-static-secret-key-for-portfolio-1234567890";
+    private final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -49,7 +50,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7 days
                 .signWith(SECRET_KEY)
                 .compact();
     }
