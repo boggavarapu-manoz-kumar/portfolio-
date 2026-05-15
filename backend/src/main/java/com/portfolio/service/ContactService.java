@@ -37,14 +37,16 @@ public class ContactService {
         
         Contact savedContact = contactRepository.save(contact);
         
-        // Try to send email but don't fail the request if Gmail is being annoying
-        try {
-            String subject = "New Contact Message from " + dto.getName();
-            String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
-            emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
-        } catch (Exception e) {
-            System.err.println("Email notification failed: " + e.getMessage());
-        }
+        // INSTANT RESPONSE: Send email in a separate background thread so the user doesn't wait
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                String subject = "New Portfolio Message: " + dto.getName();
+                String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
+                emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
+            } catch (Exception e) {
+                System.err.println("Background email task failed: " + e.getMessage());
+            }
+        });
 
         return mapToDto(savedContact);
     }
