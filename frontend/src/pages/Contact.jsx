@@ -10,13 +10,22 @@ const Contact = () => {
     e.preventDefault();
     setStatus('sending');
     try {
+      // 1. Save to database for your records in Admin Panel
       await contactService.create(form);
+      
+      // 2. Build WhatsApp URL
+      const text = `*New Portfolio Message*\n\n*Name:* ${form.name}\n*Email:* ${form.email}\n\n*Message:*\n${form.message}`;
+      const encodedText = encodeURIComponent(text);
+      const whatsappUrl = `https://wa.me/919573127515?text=${encodedText}`;
+      
+      // 3. Open WhatsApp instantly
+      window.open(whatsappUrl, '_blank');
+      
       setStatus('success');
       setForm({ name: '', email: '', message: '' });
     } catch (error) {
       console.error('Contact Error:', error);
-      const msg = error.response?.data?.message || error.message || 'Failed to send message. Try again later.';
-      setStatus({ type: 'error', message: msg });
+      setStatus({ type: 'error', message: 'Something went wrong. Please try the WhatsApp button directly!' });
     }
   };
 

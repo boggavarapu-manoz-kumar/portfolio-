@@ -551,12 +551,23 @@ const AdminDashboard = () => {
                         <p className="text-blue-400 text-sm">{msg.email}</p>
                         <p className="text-slate-500 text-xs mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
                       </div>
-                      <button 
-                        onClick={() => deleteMessage(msg.id)}
-                        className="p-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl transition-all"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div className="flex gap-2">
+                        <a 
+                          href={`https://wa.me/${msg.email.includes('@') ? '' : msg.email.replace(/[^0-9]/g, '')}?text=Hi ${msg.name}, I received your message from my portfolio...`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 bg-slate-800 hover:bg-green-500/20 text-slate-400 hover:text-green-400 rounded-xl transition-all"
+                          title="Reply on WhatsApp"
+                        >
+                          <MessageCircle size={18} />
+                        </a>
+                        <button 
+                          onClick={() => deleteMessage(msg.id)}
+                          className="p-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl transition-all"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50">
                       <p className="text-slate-300 whitespace-pre-wrap">{msg.message}</p>
