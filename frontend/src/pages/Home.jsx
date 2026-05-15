@@ -166,7 +166,7 @@ const Home = () => {
           </div>
 
           <p style={{
-            fontSize: 20, lineHeight: 1.6, color: 'rgba(255,255,255,0.45)',
+            fontSize: 20, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)',
             maxWidth: 540, margin: '0 0 48px', fontWeight: 400
           }}>
             {profile.bio}
@@ -212,9 +212,13 @@ const Home = () => {
             boxShadow: '0 40px 80px -20px rgba(0,0,0,0.6)'
           }}>
             <img
-              src={getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
+              src={profile.profileImage?.includes('cloudinary') 
+                ? profile.profileImage.replace('/upload/', '/upload/f_auto,q_auto,w_800/') 
+                : getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
               alt={profile.name}
               fetchpriority="high"
+              width="400"
+              height="480"
               style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
               onError={e => { e.target.style.display = 'none'; }}
             />
@@ -225,7 +229,7 @@ const Home = () => {
               background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)'
             }}>
               <p style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>{profile.name}</p>
-              <p style={{ margin: 0, fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>{profile.title}</p>
+              <p style={{ margin: 0, fontSize: 14, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{profile.title}</p>
             </div>
           </div>
 

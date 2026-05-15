@@ -97,15 +97,16 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await projectsService.update(editingId, projectForm);
+        const res = await projectsService.update(editingId, projectForm);
+        setProjects(projects.map(p => p.id === editingId ? (res.data?.data || res.data) : p));
         alert("Project updated successfully!");
       } else {
-        await projectsService.create(projectForm);
+        const res = await projectsService.create(projectForm);
+        setProjects([...projects, (res.data?.data || res.data)]);
         alert("Project added successfully!");
       }
       setProjectForm({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
       setEditingId(null);
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Project operation failed: " + (error.response?.data?.message || "Check your connection or login again."));
@@ -121,8 +122,8 @@ const AdminDashboard = () => {
     if (!window.confirm("Delete project?")) return;
     try {
       await projectsService.delete(id);
+      setProjects(projects.filter(p => p.id !== id));
       alert("Project deleted!");
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Delete failed. Please login again.");
@@ -134,15 +135,16 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await skillsService.update(editingId, skillForm);
+        const res = await skillsService.update(editingId, skillForm);
+        setSkills(skills.map(s => s.id === editingId ? (res.data?.data || res.data) : s));
         alert("Skill updated successfully!");
       } else {
-        await skillsService.create(skillForm);
+        const res = await skillsService.create(skillForm);
+        setSkills([...skills, (res.data?.data || res.data)]);
         alert("Skill added successfully!");
       }
       setSkillForm({ name: '', level: 'Beginner', category: 'WEB BASICS', logo: '' });
       setEditingId(null);
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Skill operation failed: " + (error.response?.data?.message || "Check your connection."));
@@ -158,8 +160,8 @@ const AdminDashboard = () => {
     if (!window.confirm("Delete skill?")) return;
     try {
       await skillsService.delete(id);
+      setSkills(skills.filter(s => s.id !== id));
       alert("Skill deleted!");
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Delete failed.");
@@ -171,15 +173,16 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await blogService.update(editingId, blogForm);
+        const res = await blogService.update(editingId, blogForm);
+        setBlogs(blogs.map(b => b.id === editingId ? (res.data?.data || res.data) : b));
         alert("Blog updated!");
       } else {
-        await blogService.create(blogForm);
+        const res = await blogService.create(blogForm);
+        setBlogs([...blogs, (res.data?.data || res.data)]);
         alert("Blog published!");
       }
       setBlogForm({ title: '', content: '' });
       setEditingId(null);
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Blog operation failed.");
@@ -195,8 +198,8 @@ const AdminDashboard = () => {
     if (!window.confirm("Delete this message?")) return;
     try {
       await contactService.delete(id);
+      setMessages(messages.filter(m => m.id !== id));
       alert("Message deleted!");
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Delete failed.");
@@ -207,8 +210,8 @@ const AdminDashboard = () => {
     if (!window.confirm("Delete blog?")) return;
     try {
       await blogService.delete(id);
+      setBlogs(blogs.filter(b => b.id !== id));
       alert("Blog deleted!");
-      fetchData();
     } catch (error) {
       console.error(error);
       alert("Delete failed.");

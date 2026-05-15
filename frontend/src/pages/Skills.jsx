@@ -74,9 +74,9 @@ const Skills = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       <div className="text-center space-y-4 mb-16">
-        <p className="text-sm font-semibold tracking-[0.2em] text-gray-400">TECHNICAL EXPERTISE</p>
+        <p className="text-sm font-semibold tracking-[0.2em] text-gray-300">TECHNICAL EXPERTISE</p>
         <h2 className="text-4xl md:text-5xl font-bold text-white">Skills</h2>
-        <p className="text-gray-400 max-w-2xl mx-auto pt-4 leading-relaxed">
+        <p className="text-gray-300 max-w-2xl mx-auto pt-4 leading-relaxed">
           Technologies and tools I use to build modern, scalable applications.
         </p>
       </div>
@@ -89,7 +89,7 @@ const Skills = () => {
           return (
             <div key={category} className="bg-[#1a1a1c] border border-gray-800 rounded-3xl p-6 sm:p-10 hover:bg-[#1f1f22] transition-all hover:border-gray-700 flex flex-col h-full shadow-xl shadow-black/20">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-sm font-bold text-gray-400 tracking-[0.2em] uppercase">{category}</h3>
+                <h3 className="text-sm font-bold text-gray-300 tracking-[0.2em] uppercase">{category}</h3>
                 <div className="h-[1px] flex-1 bg-gray-800/50 ml-6"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
