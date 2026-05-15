@@ -278,6 +278,7 @@ const AdminDashboard = () => {
                 <input required placeholder="Tech Stack (comma separated)" value={projectForm.techStack} onChange={e => setProjectForm({ ...projectForm, techStack: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 <input placeholder="GitHub Link" value={projectForm.githubLink} onChange={e => setProjectForm({ ...projectForm, githubLink: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 <input placeholder="Live Link (optional)" value={projectForm.liveLink} onChange={e => setProjectForm({ ...projectForm, liveLink: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input placeholder="Image URL (e.g. Imgur link)" value={projectForm.image} onChange={e => setProjectForm({ ...projectForm, image: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full col-span-2" />
                 <textarea required placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full col-span-2 h-24" />
               </div>
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
@@ -422,16 +423,16 @@ const AdminDashboard = () => {
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500 bg-slate-900">
                   <img
-                    src={getImgUrl(profileForm.profileImage || "/uploads/images/profile.jpg")}
+                    src={profileForm.profileImage || "https://via.placeholder.com/100"}
                     alt="Current"
                     className="w-full h-full object-cover"
                     onError={(e) => e.target.src = "https://via.placeholder.com/100"}
                   />
                 </div>
-                <label className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-all">
-                  Change Photo
-                  <input type="file" className="hidden" accept="image/*" onChange={handlePhotoSelect} />
-                </label>
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-slate-400">Profile Image URL (Paste an Imgur or LinkedIn image link)</label>
+                  <input value={profileForm.profileImage || ''} onChange={e => setProfileForm({ ...profileForm, profileImage: e.target.value })} className="bg-slate-800 p-2 rounded-xl border border-slate-700 text-white w-full focus:ring-2 focus:ring-blue-500 outline-none mt-1" placeholder="https://..." />
+                </div>
               </div>
             </div>
 
