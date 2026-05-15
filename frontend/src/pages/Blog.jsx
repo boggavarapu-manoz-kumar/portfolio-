@@ -72,8 +72,7 @@ const Blog = () => {
       </div>
 
       {/* ── NAVIGATION CONTROLS (Desktop Only) ──────────────── */}
-      <div className="carousel-nav" style={{ 
-        display: window.innerWidth > 768 ? 'flex' : 'none',
+      <div className="carousel-nav hidden md:flex" style={{ 
         position: 'absolute', top: '60%', left: 0, right: 0, transform: 'translateY(-50%)',
         justifyContent: 'space-between', padding: '0 60px', pointerEvents: 'none', zIndex: 20
       }}>

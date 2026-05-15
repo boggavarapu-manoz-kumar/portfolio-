@@ -213,7 +213,7 @@ const Home = () => {
           }}>
             <img
               src={profile.profileImage?.includes('cloudinary.com') 
-                ? profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto,w_700/$1') 
+                ? profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto,w_500/$1') 
                 : getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
               alt={profile.name}
               fetchpriority="high"
