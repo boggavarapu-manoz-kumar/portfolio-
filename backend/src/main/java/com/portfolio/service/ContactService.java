@@ -37,14 +37,9 @@ public class ContactService {
         
         Contact savedContact = contactRepository.save(contact);
         
-        // Try to send email but don't block if it fails
-        try {
-            String subject = "New Contact Message from " + dto.getName();
-            String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
-            emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
-        } catch (Exception e) {
-            System.err.println("Failed to send contact email: " + e.getMessage());
-        }
+        String subject = "New Contact Message from " + dto.getName();
+        String body = "Name: " + dto.getName() + "\nEmail: " + dto.getEmail() + "\n\nMessage:\n" + dto.getMessage();
+        emailService.sendEmail("manozkumarboggavarapu@gmail.com", subject, body);
 
         return mapToDto(savedContact);
     }
