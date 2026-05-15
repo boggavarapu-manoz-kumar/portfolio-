@@ -213,8 +213,14 @@ const Home = () => {
           }}>
             <img
               src={profile.profileImage?.includes('cloudinary.com') 
-                ? profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto,w_500/$1') 
+                ? profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto:good,w_1000/$1') 
                 : getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
+              srcSet={profile.profileImage?.includes('cloudinary.com') ? `
+                ${profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto:good,w_500/$1')} 500w,
+                ${profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto:good,w_800/$1')} 800w,
+                ${profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto:good,w_1200/$1')} 1200w
+              ` : undefined}
+              sizes="(max-width: 600px) 500px, (max-width: 1200px) 800px, 1200px"
               alt={profile.name}
               fetchpriority="high"
               width="400"
