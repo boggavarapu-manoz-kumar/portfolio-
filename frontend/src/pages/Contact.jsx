@@ -14,7 +14,9 @@ const Contact = () => {
       setStatus('success');
       setForm({ name: '', email: '', message: '' });
     } catch (error) {
-      setStatus('error');
+      console.error('Contact Error:', error);
+      const msg = error.response?.data?.message || error.message || 'Failed to send message. Try again later.';
+      setStatus({ type: 'error', message: msg });
     }
   };
 
@@ -117,8 +119,8 @@ const Contact = () => {
                 </>
               )}
             </button>
-            {status === 'success' && <p className="text-green-500 text-center mt-4">Message sent successfully!</p>}
-            {status === 'error' && <p className="text-red-500 text-center mt-4">Failed to send message. Try again later.</p>}
+            {status === 'success' && <p className="text-green-500 text-center mt-4 font-bold">Message sent successfully!</p>}
+            {status?.type === 'error' && <p className="text-red-500 text-center mt-4 font-bold">{status.message}</p>}
           </form>
         </div>
       </div>
