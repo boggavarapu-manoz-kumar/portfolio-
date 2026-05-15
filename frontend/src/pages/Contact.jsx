@@ -42,8 +42,8 @@ const Contact = () => {
       <div className="flex flex-col md:flex-row gap-12">
         {/* Contact Info */}
         <div className="flex-1 space-y-8">
-          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
-            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-400">
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors group">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-400 group-hover:scale-110 transition-transform">
               <Mail size={24} />
             </div>
             <div>
@@ -54,26 +54,26 @@ const Contact = () => {
             </div>
           </div>
 
-          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
-            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-pink-500">
-              <Camera size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Instagram</p>
-              <a href="https://instagram.com/ft.manoz" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-pink-500 transition-colors">
-                ft.manoz
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors">
-            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-500">
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors group">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-blue-500 group-hover:scale-110 transition-transform">
               <Briefcase size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-400 mb-1">LinkedIn</p>
               <a href="https://www.linkedin.com/in/manojboggavarapu/" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-blue-500 transition-colors">
                 MANOJ BOGGAVARAPU
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-[#1a1a1c] border border-gray-800 p-6 rounded-3xl flex items-center gap-6 hover:bg-[#1f1f22] transition-colors group">
+            <div className="bg-[#2a2a2e] p-4 rounded-2xl text-pink-500 group-hover:scale-110 transition-transform">
+              <Camera size={24} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Instagram</p>
+              <a href="https://instagram.com/ft.manoz" target="_blank" rel="noreferrer" className="text-white font-medium hover:text-pink-500 transition-colors">
+                ft.manoz
               </a>
             </div>
           </div>
