@@ -160,6 +160,7 @@ const Projects = () => {
                   href={project.githubLink}
                   target="_blank"
                   rel="noreferrer"
+                  aria-label={`View ${project.title} source code on GitHub`}
                   className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
                   <Code size={16} /> Source
@@ -169,6 +170,7 @@ const Projects = () => {
                     href={project.liveLink}
                     target="_blank"
                     rel="noreferrer"
+                    aria-label={`Visit ${project.title} live website`}
                     className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-xl shadow-indigo-500/40"
                   >
                     <ExternalLink size={16} /> Preview

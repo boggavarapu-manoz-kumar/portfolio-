@@ -212,8 +212,8 @@ const Home = () => {
             boxShadow: '0 40px 80px -20px rgba(0,0,0,0.6)'
           }}>
             <img
-              src={profile.profileImage?.includes('cloudinary') 
-                ? profile.profileImage.replace('/upload/', '/upload/f_auto,q_auto,w_800/') 
+              src={profile.profileImage?.includes('cloudinary.com') 
+                ? profile.profileImage.replace(/\/upload\/(v\d+\/)?/, '/upload/f_auto,q_auto,w_800/$1') 
                 : getImgUrl(profile.profileImage || '/uploads/images/profile.jpg')}
               alt={profile.name}
               fetchpriority="high"
@@ -258,7 +258,7 @@ const Home = () => {
             background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)',
             borderRadius: 32, padding: '40px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
           }}>
-            <div style={{ fontSize: 18, lineHeight: 1.8, color: 'rgba(255,255,255,0.5)', whiteSpace: 'pre-line', fontWeight: 400 }}>
+            <div style={{ fontSize: 18, lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', whiteSpace: 'pre-line', fontWeight: 400 }}>
               {profile.aboutMe || profile.bio || "Updating my story..."}
             </div>
           </div>
@@ -271,14 +271,14 @@ const Home = () => {
 
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.02em' }}>{profile.yearsOfExperience}+</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Years of Experience</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Years of Experience</div>
             </div>
 
             <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', width: '40%', margin: '0 auto' }} />
 
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.02em' }}>{profile.completedProjects}+</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Projects Completed</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.2em' }}>Projects Completed</div>
             </div>
 
           </div>

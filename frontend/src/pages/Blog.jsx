@@ -77,10 +77,18 @@ const Blog = () => {
         position: 'absolute', top: '60%', left: 0, right: 0, transform: 'translateY(-50%)',
         justifyContent: 'space-between', padding: '0 60px', pointerEvents: 'none', zIndex: 20
       }}>
-        <button onClick={() => scroll('left')} style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+        <button 
+          onClick={() => scroll('left')} 
+          aria-label="Previous Blog Post"
+          style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}
+        >
           <ChevronLeft size={24} />
         </button>
-        <button onClick={() => scroll('right')} style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+        <button 
+          onClick={() => scroll('right')} 
+          aria-label="Next Blog Post"
+          style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}
+        >
           <ChevronRight size={24} />
         </button>
       </div>
