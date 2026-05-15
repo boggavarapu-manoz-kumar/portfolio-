@@ -92,14 +92,17 @@ const AdminDashboard = () => {
     try {
       if (editingId) {
         await projectsService.update(editingId, projectForm);
+        alert("Project updated successfully!");
       } else {
         await projectsService.create(projectForm);
+        alert("Project added successfully!");
       }
       setProjectForm({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
       setEditingId(null);
       fetchData();
     } catch (error) {
       console.error(error);
+      alert("Project operation failed: " + (error.response?.data?.message || "Check your connection or login again."));
     }
   };
 
@@ -110,8 +113,14 @@ const AdminDashboard = () => {
 
   const deleteProject = async (id) => {
     if (!window.confirm("Delete project?")) return;
-    await projectsService.delete(id);
-    fetchData();
+    try {
+      await projectsService.delete(id);
+      alert("Project deleted!");
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed. Please login again.");
+    }
   };
 
   // --- SKILL HANDLERS ---
@@ -138,8 +147,14 @@ const AdminDashboard = () => {
 
   const deleteSkill = async (id) => {
     if (!window.confirm("Delete skill?")) return;
-    await skillsService.delete(id);
-    fetchData();
+    try {
+      await skillsService.delete(id);
+      alert("Skill deleted!");
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed.");
+    }
   };
 
   // --- BLOG HANDLERS ---
@@ -166,8 +181,14 @@ const AdminDashboard = () => {
 
   const deleteBlog = async (id) => {
     if (!window.confirm("Delete blog?")) return;
-    await blogService.delete(id);
-    fetchData();
+    try {
+      await blogService.delete(id);
+      alert("Blog deleted!");
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed.");
+    }
   };
 
   // --- PROFILE HANDLER ---
