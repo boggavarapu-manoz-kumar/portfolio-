@@ -51,7 +51,19 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      if (activeTab === 'projects') {
+      // In Overview or specific tabs, we might need all data for counts
+      if (activeTab === 'overview') {
+        const [projRes, skillRes, blogRes, profRes] = await Promise.all([
+          projectsService.getAll(),
+          skillsService.getAll(),
+          blogService.getAll(),
+          profileService.get()
+        ]);
+        setProjects(projRes.data?.data || projRes.data || []);
+        setSkills(skillRes.data?.data || skillRes.data || []);
+        setBlogs(blogRes.data?.data || blogRes.data || []);
+        setProfileForm(profRes.data?.data || profRes.data);
+      } else if (activeTab === 'projects') {
         const res = await projectsService.getAll();
         setProjects(res.data?.data || res.data || []);
       } else if (activeTab === 'skills') {

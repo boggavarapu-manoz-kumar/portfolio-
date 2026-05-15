@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 // Require authentication for all other requests (POST, PUT, DELETE)
                 .anyRequest().authenticated()
             )

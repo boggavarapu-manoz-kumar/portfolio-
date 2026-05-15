@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { blogService } from '../services/apiServices';
-import { Calendar, X, ArrowRight } from 'lucide-react';
+import { Calendar, X, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBlog, setSelectedBlog] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     blogService.getAll()
@@ -14,156 +16,241 @@ const Blog = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, offsetWidth } = scrollRef.current;
+      const isMobile = window.innerWidth <= 768;
+      const cardWidth = isMobile ? (window.innerWidth * 0.85 + 24) : (400 + 32);
+      const center = scrollLeft + offsetWidth / 2;
+      const index = Math.round((center - offsetWidth / 2) / cardWidth);
+      if (index !== activeIndex) setActiveIndex(index);
+    }
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const isMobile = window.innerWidth <= 768;
+      const cardWidth = isMobile ? (window.innerWidth * 0.85 + 24) : (400 + 32); 
+      const { scrollLeft } = scrollRef.current;
+      const scrollTo = direction === 'left' ? scrollLeft - cardWidth : scrollLeft + cardWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
+  if (loading) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh', flexDirection:'column', gap:16 }}>
+      <div style={{ width:40, height:40, borderRadius:'50%', border:'3px solid rgba(255,255,255,0.05)', borderTop:'3px solid #6366f1', animation:'spin 0.8s linear infinite' }} />
+      <p style={{ color:'rgba(255,255,255,0.3)', fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase' }}>Loading Articles...</p>
+      <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
+    </div>
+  );
+
   return (
-    <div style={{ maxWidth: '100vw', margin: '0 auto', padding: '0 0 80px', overflowX: 'hidden' }}>
-      <div style={{ textAlign: 'center', marginBottom: 64, padding: '0 24px' }}>
-        <p style={{ 
-          fontSize: 13, 
-          fontWeight: 600, 
-          letterSpacing: '0.4em',
-          color: '#888', 
-          textTransform: 'uppercase', 
-          marginBottom: 16 
+    <div style={{ color: '#fff', background: '#0f0f11', padding: '100px 0', position: 'relative', overflow: 'hidden' }} id="blog">
+      
+      {/* ── HEADER ─────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px 60px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ 
+          display: 'inline-flex', alignItems: 'center', gap: 8, px: '12px', py: '6px', 
+          background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.1)', 
+          borderRadius: 99, padding: '6px 16px', marginBottom: 32
         }}>
-          STORY & INSIGHTS
-        </p>
+           <BookOpen size={14} color="#6366f1" />
+           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.3em', color: '#818cf8', textTransform: 'uppercase' }}>Insights</span>
+        </div>
         <h2 style={{
-          fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
-          fontWeight: 900, 
-          margin: 0,
-          background: 'linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.4) 100%)',
+          fontSize: 'clamp(3rem, 7vw, 5.5rem)', 
+          fontWeight: 950, 
+          margin: '0 0 16px',
+          background: 'linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0.1) 100%)',
           WebkitBackgroundClip: 'text', 
           WebkitTextFillColor: 'transparent',
-          letterSpacing: '-0.02em'
-        }}>My Blogs</h2>
+          letterSpacing: '-0.05em',
+          textTransform: 'uppercase'
+        }}>BLOGS</h2>
+        <div style={{ width: 60, height: 4, background: 'rgba(99,102,241,0.2)', borderRadius: 99, marginTop: 16 }}></div>
       </div>
 
-      {loading && (
-        <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: '60px 0' }}>
-          Loading articles...
-        </div>
-      )}
+      {/* ── NAVIGATION CONTROLS (Desktop Only) ──────────────── */}
+      <div className="carousel-nav" style={{ 
+        display: window.innerWidth > 768 ? 'flex' : 'none',
+        position: 'absolute', top: '60%', left: 0, right: 0, transform: 'translateY(-50%)',
+        justifyContent: 'space-between', padding: '0 60px', pointerEvents: 'none', zIndex: 20
+      }}>
+        <button onClick={() => scroll('left')} style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+          <ChevronLeft size={24} />
+        </button>
+        <button onClick={() => scroll('right')} style={{ p: 20, pointerEvents: 'auto', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: 56, height: 56, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+          <ChevronRight size={24} />
+        </button>
+      </div>
 
-      {/* Horizontal Carousel */}
-      <div style={{ 
-        display: 'flex', 
-        gap: 24, 
-        padding: '20px 40px 40px', 
-        overflowX: 'auto',
-        scrollSnapType: 'x mandatory',
-        scrollbarWidth: 'none', // Firefox
-        msOverflowStyle: 'none' // IE/Edge
-      }} className="hide-scrollbar">
+      {/* ── CAROUSEL ────────────────────────────────────────── */}
+      <div 
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="blog-carousel"
+        style={{
+          display: 'flex',
+          overflowX: 'auto',
+          gap: '32px',
+          paddingBottom: '80px',
+          paddingTop: '40px',
+          paddingLeft: 'calc(50% - 200px)', 
+          paddingRight: 'calc(50% - 200px)', 
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+      >
         <style>{`
-          .hide-scrollbar::-webkit-scrollbar { display: none; }
-          .blog-card:hover { transform: translateY(-10px) !important; border-color: rgba(255,255,255,0.2) !important; background: #222 !important; }
+          .blog-carousel::-webkit-scrollbar { display: none; }
+          @media (max-width: 768px) {
+            .blog-carousel { padding-left: 7.5vw !important; padding-right: 7.5vw !important; gap: 16px !important; }
+            .blog-card { min-width: 85vw !important; max-width: 85vw !important; padding: 32px !important; }
+          }
         `}</style>
 
-        {blogs.map(blog => (
-          <article 
-            key={blog.id} 
-            onClick={() => setSelectedBlog(blog)}
-            className="blog-card"
-            style={{
-              flex: '0 0 400px',
-              maxWidth: '85vw',
-              background: '#1a1a1c',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 32, 
-              padding: '40px', 
-              cursor: 'pointer',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 24,
-              scrollSnapAlign: 'center',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ 
-                width: 44, height: 44, borderRadius: '50%', 
-                background: 'linear-gradient(135deg, #333, #111)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, fontWeight: 700, color: '#fff', border: '1px solid rgba(255,255,255,0.1)'
-              }}>M</div>
+        {blogs.map((blog, index) => {
+          const isFocused = index === activeIndex;
+          return (
+            <article 
+              key={blog.id} 
+              onClick={() => setSelectedBlog(blog)}
+              className="blog-card"
+              style={{
+                minWidth: '400px', 
+                maxWidth: '400px',
+                scrollSnapAlign: 'center',
+                background: isFocused ? '#18181b' : '#111113',
+                border: `1px solid ${isFocused ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.04)'}`,
+                borderRadius: '32px',
+                padding: '44px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                position: 'relative',
+                transform: isFocused ? 'scale(1.05)' : 'scale(0.9)',
+                opacity: isFocused ? 1 : 0.4,
+                transition: 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
+                boxShadow: isFocused ? '0 40px 80px -20px rgba(99,102,241,0.2)' : 'none',
+                cursor: 'pointer'
+              }}
+            >
               <div>
-                <h4 style={{ margin: 0, color: '#fff', fontSize: 14, fontWeight: 700 }}>MANOJ BOGGAVARAPU</h4>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, display: 'flex', gap: 8 }}>
-                  <Calendar size={12} />
-                  <span>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+                   <div style={{ 
+                     width: 44, height: 44, borderRadius: '50%', 
+                     background: isFocused ? '#6366f1' : 'rgba(255,255,255,0.05)',
+                     display: 'flex', alignItems: 'center', justifyContent: 'center',
+                     fontSize: 14, fontWeight: 800, color: '#fff', transition: 'all 0.4s'
+                   }}>M</div>
+                   <div>
+                     <h4 style={{ margin: 0, color: isFocused ? '#fff' : '#666', fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Manoj Kumar</h4>
+                     <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'Recent'}</p>
+                   </div>
                 </div>
+
+                <h3 style={{ 
+                  fontSize: 26, fontWeight: 900, color: isFocused ? '#fff' : '#555', 
+                  margin: '0 0 16px', lineHeight: 1.2, letterSpacing: '-0.02em',
+                  transition: 'all 0.4s'
+                }}>{blog.title}</h3>
+                
+                <p style={{ 
+                  fontSize: 15, lineHeight: 1.7, 
+                  color: isFocused ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)', 
+                  margin: 0, display: '-webkit-box', WebkitLineClamp: 4, 
+                  WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  transition: 'all 0.4s'
+                }}>
+                  {blog.content}
+                </p>
               </div>
-            </div>
 
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: '0 0 12px', lineHeight: 1.3 }}>{blog.title}</h3>
-              <p style={{ fontSize: 15, lineHeight: 1.7, color: 'rgba(255,255,255,0.5)', margin: 0, display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                {blog.content}
-              </p>
-            </div>
+              <div style={{ 
+                display: 'flex', alignItems: 'center', gap: 8, 
+                color: isFocused ? '#6366f1' : '#444', 
+                fontSize: 12, fontWeight: 800, textTransform: 'uppercase', 
+                letterSpacing: '0.1em', marginTop: 32, transition: 'all 0.4s'
+              }}>
+                Read Insight <ArrowRight size={14} />
+              </div>
+            </article>
+          );
+        })}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#4dabf7', fontSize: 14, fontWeight: 700 }}>
-              Read Post <ArrowRight size={16} />
-            </div>
-          </article>
-        ))}
-        
-        {blogs.length === 0 && !loading && (
-          <div style={{ minWidth: '100%', textAlign: 'center', padding: '100px 0', color: 'rgba(255,255,255,0.2)' }}>
-            No blog posts yet.
+        {blogs.length === 0 && (
+          <div style={{ minWidth: '100%', textAlign: 'center', py: 40, color: 'rgba(255,255,255,0.2)', fontWeight: 800, letterSpacing: '0.2em' }}>
+            NO ARTICLES PUBLISHED
           </div>
         )}
       </div>
 
-      {/* Blog Modal Popup */}
+      {/* ── PROGRESS INDICATOR ───────────────────────────────── */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+        {blogs.map((_, i) => (
+          <div 
+            key={i} 
+            style={{ 
+              height: 4, borderRadius: 99, transition: 'all 0.5s ease',
+              width: i === activeIndex ? 40 : 8,
+              background: i === activeIndex ? '#6366f1' : 'rgba(255,255,255,0.1)'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ── MODAL POPUP (Same logic, refined look) ─────────────── */}
       {selectedBlog && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)',
+          background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(20px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 9999, padding: 20
         }} onClick={() => setSelectedBlog(null)}>
           <div style={{
-            background: '#1a1a1c', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 32, width: '100%', maxWidth: 800, maxHeight: '90vh',
+            background: '#0f0f11', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 40, width: '100%', maxWidth: 800, maxHeight: '90vh',
             overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column',
-            boxShadow: '0 30px 60px rgba(0,0,0,0.5)', animation: 'modalIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+            boxShadow: '0 50px 100px rgba(0,0,0,0.8)', animation: 'modalIn 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
           }} onClick={e => e.stopPropagation()}>
             <style>{`
-              @keyframes modalIn { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+              @keyframes modalIn { from { opacity: 0; transform: translateY(40px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
             `}</style>
             
             <button 
               onClick={() => setSelectedBlog(null)}
-              style={{ position: 'absolute', top: 24, right: 24, background: '#333', border: 'none', color: '#fff', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
-            ><X size={20} /></button>
+              style={{ position: 'absolute', top: 32, right: 32, background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, transition: 'all 0.3s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+            ><X size={24} /></button>
 
-            <div style={{ padding: '60px 60px 40px', overflowY: 'auto' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
+            <div style={{ padding: '80px 60px 40px', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 40 }}>
                 <div style={{ 
-                  width: 56, height: 56, borderRadius: '50%', 
-                  background: 'linear-gradient(135deg, #444, #000)',
+                  width: 60, height: 60, borderRadius: '50%', 
+                  background: '#6366f1',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 22, fontWeight: 700, color: '#fff', border: '2px solid rgba(255,255,255,0.1)'
+                  fontSize: 20, fontWeight: 900, color: '#fff'
                 }}>M</div>
                 <div>
-                  <h4 style={{ margin: 0, color: '#fff', fontSize: 18, fontWeight: 700 }}>MANOJ BOGGAVARAPU</h4>
-                  <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>
-                    Published on {new Date(selectedBlog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  <h4 style={{ margin: 0, color: '#fff', fontSize: 18, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Manoj Kumar</h4>
+                  <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 600 }}>
+                    Published {new Date(selectedBlog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.2 }}>{selectedBlog.title}</h2>
+              <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 950, color: '#fff', marginBottom: 32, lineHeight: 1.1, letterSpacing: '-0.04em' }}>{selectedBlog.title}</h2>
               
-              <div style={{ fontSize: 18, lineHeight: 1.8, color: 'rgba(255,255,255,0.8)', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+              <div style={{ fontSize: 19, lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontWeight: 400 }}>
                 {selectedBlog.content}
               </div>
             </div>
 
-            <div style={{ padding: '30px 60px', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setSelectedBlog(null)} style={{ background: '#fff', color: '#000', border: 'none', padding: '12px 32px', borderRadius: 16, fontWeight: 700, cursor: 'pointer' }}>Close Reading</button>
+            <div style={{ padding: '40px 60px', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedBlog(null)} style={{ background: '#fff', color: '#000', border: 'none', padding: '16px 40px', borderRadius: 20, fontWeight: 900, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.3s' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>Close Reading</button>
             </div>
           </div>
         </div>

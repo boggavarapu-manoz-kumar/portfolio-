@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Code, ExternalLink } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Code, ExternalLink, ChevronLeft, ChevronRight, Briefcase, Zap } from 'lucide-react';
 import { projectsService } from '../services/apiServices';
-import { getImgUrl } from '../api/axiosInstance';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     projectsService.getAll()
@@ -16,116 +17,195 @@ const Projects = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="text-center py-32 animate-pulse text-gray-500 tracking-widest">LOADING PROJECTS...</div>;
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, offsetWidth } = scrollRef.current;
+      const cardWidth = 360 + 32; // width + gap
+      const center = scrollLeft + offsetWidth / 2;
+      const index = Math.round((center - offsetWidth / 2) / cardWidth);
+      if (index !== activeIndex) setActiveIndex(index);
+    }
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const isMobile = window.innerWidth <= 768;
+      const cardWidth = isMobile ? (window.innerWidth * 0.85 + 24) : (360 + 32); 
+      const { scrollLeft } = scrollRef.current;
+      const scrollTo = direction === 'left' ? scrollLeft - cardWidth : scrollLeft + cardWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center py-32 gap-4">
+      <div className="w-12 h-12 rounded-full border-t-2 border-indigo-500 animate-spin"></div>
+      <p className="text-gray-500 font-bold tracking-[0.3em] uppercase text-xs text-center">Loading Perfection</p>
+    </div>
+  );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16">
-      <div className="text-center space-y-4 mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold text-white">Projects</h2>
-        <p className="text-gray-400 max-w-2xl mx-auto pt-4 leading-relaxed">
-          A mix of full-stack web apps and mobile experiences, focused on clean UX, performance and real-world use cases.
-        </p>
+    <div className="w-full py-32 relative overflow-hidden bg-[#0f0f11] select-none" id="projects">
+      
+      {/* Dynamic Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[800px] h-[600px] bg-indigo-500/5 blur-[160px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-6 mb-20 flex flex-col items-center text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 mb-8">
+          <Briefcase size={12} className="text-indigo-400" />
+          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em]">Portfolio</span>
+        </div>
+        <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-4">
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-white/70 to-white/10">
+            PROJECTS
+          </span>
+        </h2>
+        <div className="w-16 h-1.5 bg-indigo-500/20 rounded-full mt-4"></div>
+      </div>
+
+      {/* Navigation Controls (Desktop Only) */}
+      <div className="hidden md:flex absolute top-1/2 left-0 right-0 -translate-y-1/2 justify-between px-12 pointer-events-none z-20">
+        <button 
+          onClick={() => scroll('left')}
+          className="p-5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:bg-indigo-500 transition-all active:scale-90 pointer-events-auto shadow-2xl group"
+        >
+          <ChevronLeft size={28} className="group-hover:-translate-x-1 transition-transform" />
+        </button>
+        <button 
+          onClick={() => scroll('right')}
+          className="p-5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:bg-indigo-500 transition-all active:scale-90 pointer-events-auto shadow-2xl group"
+        >
+          <ChevronRight size={28} className="group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
 
       <div 
+        ref={scrollRef}
+        onScroll={handleScroll}
         style={{
           display: 'flex',
           overflowX: 'auto',
           gap: '32px',
-          paddingBottom: '40px',
-          paddingLeft: '4px',
-          paddingRight: '4px',
+          paddingBottom: '60px',
+          paddingTop: '40px',
+          paddingLeft: 'calc(50% - 180px)', 
+          paddingRight: 'calc(50% - 180px)', 
           scrollSnapType: 'x mandatory',
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(255,255,255,0.1) transparent'
+          scrollbarWidth: 'none',
         }}
-        className="custom-scrollbar"
+        className="no-scrollbar project-carousel"
       >
-        {projects.map(project => (
-          <div 
-            key={project.id} 
-            style={{ 
-              minWidth: 'min(400px, 85vw)', 
-              scrollSnapAlign: 'start',
-              background: '#1a1a1c',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '32px',
-              padding: '32px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              transition: 'all 0.3s ease'
-            }}
-            className="hover:bg-[#1f1f22] hover:border-gray-700 group"
-          >
-            <div className="space-y-6">
-              <div style={{ height: '220px', width: '100%', background: '#09090b', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <img
-                  src={getImgUrl(project.image || "/uploads/images/default_project.jpg")}
-                  alt={project.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  className="group-hover:scale-105 transition-transform duration-500"
-                  onError={e => { e.target.style.display = 'none'; }}
-                />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
-                <p className="text-gray-400 leading-relaxed text-sm line-clamp-3">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {project.techStack?.split(',').map(tech => (
-                    <span key={tech} className="text-[10px] font-black uppercase tracking-widest bg-white/5 text-gray-500 px-3 py-1 rounded-full border border-white/5">
-                      {tech.trim()}
-                    </span>
-                  ))}
+        {projects.map((project, index) => {
+          const isFocused = index === activeIndex;
+          return (
+            <div 
+              key={project.id} 
+              style={{ 
+                minWidth: '360px', 
+                maxWidth: '360px',
+                scrollSnapAlign: 'center',
+                background: isFocused ? '#18181b' : '#111113',
+                border: `1px solid ${isFocused ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.04)'}`,
+                borderRadius: '32px',
+                padding: '40px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                position: 'relative',
+                transform: isFocused ? 'scale(1.05)' : 'scale(0.9)',
+                opacity: isFocused ? 1 : 0.4,
+                transition: 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
+                boxShadow: isFocused ? '0 40px 80px -20px rgba(99,102,241,0.2)' : 'none',
+              }}
+              className="group project-card"
+            >
+              <div className="space-y-8">
+                {/* Coin Icon */}
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center relative transition-all duration-500 ${isFocused ? 'bg-indigo-500 text-white rotate-[360deg]' : 'bg-white/5 text-gray-500'}`}>
+                   <div className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-500 ${isFocused ? 'bg-indigo-500/50 opacity-100' : 'opacity-0'}`}></div>
+                   <Code size={28} className="relative z-10" />
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className={`text-3xl font-black tracking-tighter transition-colors duration-500 ${isFocused ? 'text-white' : 'text-gray-500'}`}>
+                    {project.title}
+                  </h3>
+                  <p className={`text-sm leading-relaxed font-medium transition-colors duration-500 ${isFocused ? 'text-gray-400' : 'text-gray-600'} line-clamp-3`}>
+                    {project.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-4">
+                    {project.techStack?.split(',').map(tech => (
+                      <span key={tech} className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border transition-all duration-500 ${isFocused ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/5 text-gray-600'}`}>
+                        {tech.trim()}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-4 mt-10">
-              <a
-                href={project.githubLink}
-                target="_blank"
-                rel="noreferrer"
-                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}
-                className="hover:bg-white/5 transition-all"
-              >
-                <Code size={16} /> Code
-              </a>
-              {project.liveLink && (
+
+              <div className={`flex gap-4 mt-12 transition-all duration-500 ${isFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 <a
-                  href={project.liveLink}
+                  href={project.githubLink}
                   target="_blank"
                   rel="noreferrer"
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '12px', borderRadius: '14px', background: '#fff', color: '#000', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}
-                  className="hover:bg-gray-200 transition-all"
+                  className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
-                  <ExternalLink size={16} /> Live
+                  <Code size={16} /> Source
                 </a>
-              )}
+                {project.liveLink && (
+                  <a
+                    href={project.liveLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-xl shadow-indigo-500/40"
+                  >
+                    <ExternalLink size={16} /> Preview
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
+
         {projects.length === 0 && (
-          <div className="w-full text-center py-20 text-gray-500 bg-[#1a1a1c] border border-gray-800 rounded-3xl">
-            No projects added yet. Admin can add them from the dashboard.
+          <div className="w-full text-center py-20 text-gray-500 bg-[#1a1a1c] border border-white/5 rounded-[40px] mx-6 font-bold tracking-widest">
+            NO PROJECTS DISCOVERED
           </div>
         )}
       </div>
 
+      {/* Progress Indicator */}
+      <div className="flex justify-center gap-3 mt-8">
+        {projects.map((_, i) => (
+          <div 
+            key={i} 
+            className={`h-1 rounded-full transition-all duration-500 ${i === activeIndex ? 'w-12 bg-indigo-500' : 'w-2 bg-white/10'}`}
+          />
+        ))}
+      </div>
+
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 6px;
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.05);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.1);
+        @media (max-width: 768px) {
+          .project-carousel {
+            padding-left: 7.5vw !important;
+            padding-right: 7.5vw !important;
+            gap: 16px !important;
+          }
+          .project-card {
+            min-width: 85vw !important;
+            max-width: 85vw !important;
+            padding: 32px !important;
+          }
+          .project-card h3 {
+            font-size: 1.5rem !important;
+          }
         }
       `}</style>
     </div>
