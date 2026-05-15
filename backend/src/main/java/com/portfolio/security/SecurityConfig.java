@@ -32,6 +32,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configure(http))
             .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
