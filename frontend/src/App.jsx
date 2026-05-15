@@ -4,6 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import SinglePage from './pages/SinglePage';
 import ProtectedRoute from './components/ProtectedRoute';
+import GoogleAnalytics from './components/GoogleAnalytics';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -18,6 +20,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <GoogleAnalytics />
         <div className="min-h-screen bg-[#0f0f11] text-gray-100 flex flex-col font-sans">
           <Navbar />
           <main className="flex-grow">
