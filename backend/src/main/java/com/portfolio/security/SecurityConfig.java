@@ -32,6 +32,7 @@ public class SecurityConfig {
             .cors(org.springframework.security.config.Customizer.withDefaults())
             .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/", "/api/health").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
@@ -46,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 // Require authentication for all other requests (POST, PUT, DELETE)
                 .anyRequest().authenticated()
+
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
