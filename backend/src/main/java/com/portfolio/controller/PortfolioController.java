@@ -4,8 +4,8 @@ import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.PortfolioDataDto;
 import com.portfolio.service.BlogService;
 import com.portfolio.service.ProfileService;
-import com.portfolio.service.ProjectsService;
-import com.portfolio.service.SkillsService;
+import com.portfolio.service.ProjectService;
+import com.portfolio.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,9 @@ public class PortfolioController {
     @Autowired
     private ProfileService profileService;
     @Autowired
-    private SkillsService skillsService;
+    private SkillService skillService;
     @Autowired
-    private ProjectsService projectsService;
+    private ProjectService projectService;
     @Autowired
     private BlogService blogService;
 
@@ -31,8 +31,8 @@ public class PortfolioController {
     public ResponseEntity<ApiResponse<PortfolioDataDto>> getFullPortfolioData() {
         PortfolioDataDto data = new PortfolioDataDto(
             profileService.getProfile(),
-            skillsService.getAllSkills(),
-            projectsService.getAllProjects(),
+            skillService.getAllSkills(),
+            projectService.getAllProjects(),
             blogService.getAllBlogs()
         );
         return ResponseEntity.ok()
