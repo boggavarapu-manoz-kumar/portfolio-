@@ -5,6 +5,8 @@ import com.portfolio.exception.ResourceNotFoundException;
 import com.portfolio.model.Project;
 import com.portfolio.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Cacheable(value = "projects")
     public List<ProjectDto> getAllProjects() {
         return projectRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
@@ -25,6 +28,7 @@ public class ProjectService {
         return mapToDto(project);
     }
 
+    @CacheEvict(value = "projects", allEntries = true)
     public ProjectDto saveProject(ProjectDto dto) {
         Project project = new Project();
         project.setId(dto.getId());

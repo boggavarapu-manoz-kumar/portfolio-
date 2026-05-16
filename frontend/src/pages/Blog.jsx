@@ -1,20 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { blogService } from '../services/apiServices';
 import { Calendar, X, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Blog = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: blogs = [], isLoading: loading } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => {
+      const res = await blogService.getAll();
+      return res?.data || [];
+    },
+  });
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    blogService.getAll()
-      .then(res => setBlogs(res?.data || []))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
 
   const handleScroll = () => {
     if (scrollRef.current) {

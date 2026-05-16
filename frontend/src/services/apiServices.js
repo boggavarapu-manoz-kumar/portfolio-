@@ -49,3 +49,7 @@ export const uploadService = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
 };
+
+export const portfolioService = {
+  getAll: () => api.get('/portfolio-data'),
+};

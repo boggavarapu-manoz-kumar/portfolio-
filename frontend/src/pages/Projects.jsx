@@ -1,21 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { Code, ExternalLink, ChevronLeft, ChevronRight, Briefcase, Zap } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Code, ExternalLink, ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
 import { projectsService } from '../services/apiServices';
 
 const Projects = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects = [], isLoading: loading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const res = await projectsService.getAll();
+      return res.data?.data || res.data || [];
+    },
+  });
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    projectsService.getAll()
-      .then(res => {
-        setProjects(res.data?.data || res.data || []);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
 
   const handleScroll = () => {
     if (scrollRef.current) {

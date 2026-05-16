@@ -26,27 +26,7 @@ public class CorsConfig {
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")
                         .allowCredentials(true)
-                        .maxAge(3600); // 1 hour pre-flight cache
-            }
-
-            @Override
-            public void addInterceptors(org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
-                registry.addInterceptor(new org.springframework.web.servlet.HandlerInterceptor() {
-                    @Override
-                    public boolean preHandle(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, Object handler) {
-                        String path = request.getRequestURI();
-                        if (request.getMethod().equals("GET")) {
-                            if (path.startsWith("/api/")) {
-                                // For API requests, ensure we get fresh data but allow some validation
-                                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                            } else {
-                                // For static assets like uploads, cache for 1 hour
-                                response.setHeader("Cache-Control", "public, max-age=3600");
-                            }
-                        }
-                        return true;
-                    }
-                });
+                        .maxAge(86400); // 24 hours pre-flight cache
             }
         };
     }

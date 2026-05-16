@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { skillsService } from '../services/apiServices';
 
 const getDevIconUrl = (name) => {
+  // ... iconMap content ...
   const iconMap = {
     'html': 'html5',
     'css': 'css3',
@@ -41,17 +42,13 @@ const getDevIconUrl = (name) => {
 };
 
 const Skills = () => {
-  const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    skillsService.getAll()
-      .then(res => {
-        setSkills(res.data?.data || res.data || []);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: skills = [], isLoading: loading } = useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      const res = await skillsService.getAll();
+      return res.data?.data || res.data || [];
+    },
+  });
 
   if (loading) return <div className="text-center py-32 animate-pulse text-gray-500 tracking-widest">LOADING SKILLS...</div>;
 

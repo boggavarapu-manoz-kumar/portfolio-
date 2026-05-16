@@ -4,6 +4,8 @@ import com.portfolio.dto.ProfileDto;
 import com.portfolio.model.Profile;
 import com.portfolio.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,11 +14,13 @@ public class ProfileService {
     @Autowired
     private ProfileRepository profileRepository;
 
+    @Cacheable(value = "profile")
     public ProfileDto getProfile() {
         Profile profile = profileRepository.findById(1L).orElse(new Profile());
         return mapToDto(profile);
     }
 
+    @CacheEvict(value = "profile", allEntries = true)
     public ProfileDto updateProfile(ProfileDto dto) {
         Profile profile = profileRepository.findById(1L).orElse(new Profile());
         profile.setId(1L); // Ensure it's always ID 1

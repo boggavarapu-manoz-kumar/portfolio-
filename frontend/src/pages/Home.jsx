@@ -1,25 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Code, Briefcase, FileText, User, Target, Zap } from 'lucide-react';
+import { Code, Briefcase, FileText, User } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { profileService } from '../services/apiServices';
 import { getImgUrl } from '../api/axiosInstance';
 import SEO from '../components/SEO';
 
 const Home = () => {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    profileService.get()
-      .then(res => {
-        // axios interceptor unwraps → res = { success, data: {...profile} }
-        const p = res?.data || res;
-        if (p && p.name) setProfile(p);
-        else setError(true);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: profile, isLoading: loading, isError: error } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const res = await profileService.get();
+      return res?.data || res;
+    },
+  });
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', flexDirection: 'column', gap: 16 }}>

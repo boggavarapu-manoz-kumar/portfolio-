@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Briefcase, FileText, Code, Plus, Trash2, Edit2, Mail } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { LogOut, LayoutDashboard, Briefcase, FileText, Code, Plus, Trash2, Edit2, Mail, MessageCircle } from 'lucide-react';
 import { projectsService, skillsService, profileService, uploadService, blogService, contactService } from '../services/apiServices';
 import PhotoEditor from '../components/PhotoEditor';
 import { getImgUrl } from '../api/axiosInstance';
@@ -23,19 +24,54 @@ const getDevIconUrl = (name) => {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Data States
-  const [projects, setProjects] = useState([]);
-  const [skills, setSkills] = useState([]);
-  const [blogs, setBlogs] = useState([]);
-  const [messages, setMessages] = useState([]);
+  // Queries
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const res = await projectsService.getAll();
+      return res.data?.data || res.data || [];
+    }
+  });
 
-  // Form States
+  const { data: skills = [] } = useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      const res = await skillsService.getAll();
+      return res.data?.data || res.data || [];
+    }
+  });
+
+  const { data: blogs = [] } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => {
+      const res = await blogService.getAll();
+      return res.data?.data || res.data || [];
+    }
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ['messages'],
+    queryFn: async () => {
+      const res = await contactService.getAll();
+      return res.data?.data || res.data || [];
+    }
+  });
+
+  const { data: profileData } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const res = await profileService.get();
+      return res.data?.data || res.data;
+    }
+  });
+
+  // Form States (now initialized with query data via useEffect or local sync)
   const [projectForm, setProjectForm] = useState({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
   const [skillForm, setSkillForm] = useState({ name: '', level: 'Beginner', category: 'WEB BASICS', logo: '' });
   const [blogForm, setBlogForm] = useState({ title: '', content: '' });
-
   const [editingId, setEditingId] = useState(null);
   const [profileForm, setProfileForm] = useState({
     name: '', title: '', bio: '', aboutMe: '',
@@ -43,191 +79,87 @@ const AdminDashboard = () => {
     githubLink: '', linkedinLink: '', resumeLink: '', profileImage: ''
   });
 
+  // Sync profileForm with profileData when it loads
+  useState(() => {
+    if (profileData && !profileForm.name) {
+      setProfileForm(profileData);
+    }
+  });
+
   const [tempImage, setTempImage] = useState(null);
   const [showEditor, setShowEditor] = useState(false);
-
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
-    try {
-      // In Overview or specific tabs, we might need all data for counts
-      if (activeTab === 'overview') {
-        const [projRes, skillRes, blogRes, profRes, msgRes] = await Promise.all([
-          projectsService.getAll(),
-          skillsService.getAll(),
-          blogService.getAll(),
-          profileService.get(),
-          contactService.getAll()
-        ]);
-        setProjects(projRes.data?.data || projRes.data || []);
-        setSkills(skillRes.data?.data || skillRes.data || []);
-        setBlogs(blogRes.data?.data || blogRes.data || []);
-        setProfileForm(profRes.data?.data || profRes.data);
-        setMessages(msgRes.data?.data || msgRes.data || []);
-      } else if (activeTab === 'projects') {
-        const res = await projectsService.getAll();
-        setProjects(res.data?.data || res.data || []);
-      } else if (activeTab === 'skills') {
-        const res = await skillsService.getAll();
-        setSkills(res.data?.data || res.data || []);
-      } else if (activeTab === 'blogs') {
-        const res = await blogService.getAll();
-        setBlogs(res.data?.data || res.data || []);
-      } else if (activeTab === 'profile') {
-        const res = await profileService.get();
-        setProfileForm(res.data?.data || res.data);
-      } else if (activeTab === 'messages') {
-        const res = await contactService.getAll();
-        setMessages(res.data?.data || res.data || []);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/admin/login');
   };
 
-  // --- PROJECT HANDLERS ---
-  const handleProjectSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        const res = await projectsService.update(editingId, projectForm);
-        setProjects(projects.map(p => p.id === editingId ? (res.data?.data || res.data) : p));
-        alert("Project updated successfully!");
-      } else {
-        const res = await projectsService.create(projectForm);
-        setProjects([...projects, (res.data?.data || res.data)]);
-        alert("Project added successfully!");
-      }
+  // --- MUTATIONS ---
+  const projectMutation = useMutation({
+    mutationFn: async (data) => editingId ? projectsService.update(editingId, data) : projectsService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       setProjectForm({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
       setEditingId(null);
-    } catch (error) {
-      console.error(error);
-      alert("Project operation failed: " + (error.response?.data?.message || "Check your connection or login again."));
-    }
-  };
+      alert(editingId ? "Project updated!" : "Project added!");
+    },
+    onError: (error) => alert("Operation failed: " + (error.response?.data?.message || "Error")),
+  });
 
-  const editProject = (p) => {
-    setEditingId(p.id);
-    setProjectForm({ title: p.title, description: p.description, techStack: p.techStack, githubLink: p.githubLink, liveLink: p.liveLink, image: p.image });
-  };
-
-  const deleteProject = async (id) => {
-    if (!window.confirm("Delete project?")) return;
-    try {
-      await projectsService.delete(id);
-      setProjects(projects.filter(p => p.id !== id));
-      alert("Project deleted!");
-    } catch (error) {
-      console.error(error);
-      alert("Delete failed. Please login again.");
-    }
-  };
-
-  // --- SKILL HANDLERS ---
-  const handleSkillSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        const res = await skillsService.update(editingId, skillForm);
-        setSkills(skills.map(s => s.id === editingId ? (res.data?.data || res.data) : s));
-        alert("Skill updated successfully!");
-      } else {
-        const res = await skillsService.create(skillForm);
-        setSkills([...skills, (res.data?.data || res.data)]);
-        alert("Skill added successfully!");
-      }
+  const skillMutation = useMutation({
+    mutationFn: async (data) => editingId ? skillsService.update(editingId, data) : skillsService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['skills'] });
       setSkillForm({ name: '', level: 'Beginner', category: 'WEB BASICS', logo: '' });
       setEditingId(null);
-    } catch (error) {
-      console.error(error);
-      alert("Skill operation failed: " + (error.response?.data?.message || "Check your connection."));
-    }
-  };
+      alert("Skill saved!");
+    },
+  });
 
-  const editSkill = (s) => {
-    setEditingId(s.id);
-    setSkillForm({ name: s.name, level: s.level || 'Beginner', category: s.category || 'WEB BASICS', logo: s.logo || '' });
-  };
-
-  const deleteSkill = async (id) => {
-    if (!window.confirm("Delete skill?")) return;
-    try {
-      await skillsService.delete(id);
-      setSkills(skills.filter(s => s.id !== id));
-      alert("Skill deleted!");
-    } catch (error) {
-      console.error(error);
-      alert("Delete failed.");
-    }
-  };
-
-  // --- BLOG HANDLERS ---
-  const handleBlogSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        const res = await blogService.update(editingId, blogForm);
-        setBlogs(blogs.map(b => b.id === editingId ? (res.data?.data || res.data) : b));
-        alert("Blog updated!");
-      } else {
-        const res = await blogService.create(blogForm);
-        setBlogs([...blogs, (res.data?.data || res.data)]);
-        alert("Blog published!");
-      }
+  const blogMutation = useMutation({
+    mutationFn: async (data) => editingId ? blogService.update(editingId, data) : blogService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
       setBlogForm({ title: '', content: '' });
       setEditingId(null);
-    } catch (error) {
-      console.error(error);
-      alert("Blog operation failed.");
-    }
-  };
+      alert("Blog published!");
+    },
+  });
 
-  const editBlog = (b) => {
-    setEditingId(b.id);
-    setBlogForm({ title: b.title, content: b.content });
-  };
+  const profileMutation = useMutation({
+    mutationFn: (data) => profileService.update(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      alert("Profile updated!");
+    },
+  });
 
-  const deleteMessage = async (id) => {
-    if (!window.confirm("Delete this message?")) return;
-    try {
-      await contactService.delete(id);
-      setMessages(messages.filter(m => m.id !== id));
-      alert("Message deleted!");
-    } catch (error) {
-      console.error(error);
-      alert("Delete failed.");
-    }
-  };
+  const deleteMutation = useMutation({
+    mutationFn: async ({ type, id }) => {
+      if (type === 'project') return projectsService.delete(id);
+      if (type === 'skill') return skillsService.delete(id);
+      if (type === 'blog') return blogService.delete(id);
+      if (type === 'message') return contactService.delete(id);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [variables.type === 'message' ? 'messages' : variables.type + 's'] });
+    },
+  });
 
-  const deleteBlog = async (id) => {
-    if (!window.confirm("Delete blog?")) return;
-    try {
-      await blogService.delete(id);
-      setBlogs(blogs.filter(b => b.id !== id));
-      alert("Blog deleted!");
-    } catch (error) {
-      console.error(error);
-      alert("Delete failed.");
-    }
-  };
+  // --- HANDLERS ---
+  const handleProjectSubmit = (e) => { e.preventDefault(); projectMutation.mutate(projectForm); };
+  const handleSkillSubmit = (e) => { e.preventDefault(); skillMutation.mutate(skillForm); };
+  const handleBlogSubmit = (e) => { e.preventDefault(); blogMutation.mutate(blogForm); };
+  const handleProfileSubmit = (e) => { e.preventDefault(); profileMutation.mutate(profileForm); };
 
-  // --- PROFILE HANDLER ---
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await profileService.update(profileForm);
-      if (res.data?.success || res.status === 200) alert("Profile updated!");
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const editProject = (p) => { setEditingId(p.id); setProjectForm(p); };
+  const editSkill = (s) => { setEditingId(s.id); setSkillForm(s); };
+  const editBlog = (b) => { setEditingId(b.id); setBlogForm(b); };
+
+  const deleteProject = (id) => { if (window.confirm("Delete project?")) deleteMutation.mutate({ type: 'project', id }); };
+  const deleteSkill = (id) => { if (window.confirm("Delete skill?")) deleteMutation.mutate({ type: 'skill', id }); };
+  const deleteBlog = (id) => { if (window.confirm("Delete blog?")) deleteMutation.mutate({ type: 'blog', id }); };
+  const deleteMessage = (id) => { if (window.confirm("Delete message?")) deleteMutation.mutate({ type: 'message', id }); };
 
   const handlePhotoSelect = (e) => {
     if (e.target.files && e.target.files.length > 0) {

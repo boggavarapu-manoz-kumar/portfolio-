@@ -5,6 +5,8 @@ import com.portfolio.exception.ResourceNotFoundException;
 import com.portfolio.model.Blog;
 import com.portfolio.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,16 +17,19 @@ public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
+    @Cacheable(value = "blogs")
     public List<BlogDto> getAllBlogs() {
         return blogRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Cacheable(value = "blogs", key = "#id")
     public BlogDto getBlogById(Long id) {
         Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id: " + id));
         return mapToDto(blog);
     }
 
+    @CacheEvict(value = "blogs", allEntries = true)
     public BlogDto saveBlog(BlogDto dto) {
         Blog blog = new Blog();
         blog.setId(dto.getId());
@@ -36,6 +41,7 @@ public class BlogService {
         return mapToDto(savedBlog);
     }
 
+    @CacheEvict(value = "blogs", allEntries = true)
     public BlogDto updateBlog(Long id, BlogDto dto) {
         Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id: " + id));
@@ -49,6 +55,7 @@ public class BlogService {
         return mapToDto(updatedBlog);
     }
 
+    @CacheEvict(value = "blogs", allEntries = true)
     public void deleteBlog(Long id) {
         if (!blogRepository.existsById(id)) {
             throw new ResourceNotFoundException("Blog not found with id: " + id);

@@ -41,7 +41,28 @@
     <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
     <!-- Preload critical API data -->
-    <link rel="preload" href="https://manoj-portfolio-api-lpw5.onrender.com/api/profile" as="fetch" crossorigin />
+    <link rel="preload" href="https://manoj-portfolio-api-lpw5.onrender.com/api/portfolio-data" as="fetch" crossorigin />
+
+    <style>
+      #root:empty {
+        background: #0f0f11;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #root:empty::after {
+        content: "";
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.05);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
     <script type="application/ld+json">
     {
@@ -60,6 +81,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx" fetchpriority="high"></script>
   </body>
 </html>

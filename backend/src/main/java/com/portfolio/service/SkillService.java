@@ -5,6 +5,8 @@ import com.portfolio.exception.ResourceNotFoundException;
 import com.portfolio.model.Skill;
 import com.portfolio.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
+    @Cacheable(value = "skills")
     public List<SkillDto> getAllSkills() {
         return skillRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
@@ -25,6 +28,7 @@ public class SkillService {
         return mapToDto(skill);
     }
 
+    @CacheEvict(value = "skills", allEntries = true)
     public SkillDto saveSkill(SkillDto dto) {
         Skill skill = new Skill();
         skill.setId(dto.getId());
