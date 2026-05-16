@@ -1,5 +1,7 @@
 package com.portfolio.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
@@ -7,6 +9,9 @@ import java.util.Map;
 
 @RestController
 public class HealthController {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private static final long startTime = System.currentTimeMillis();
 
@@ -16,11 +21,20 @@ public class HealthController {
         status.put("status", "UP");
         status.put("message", "Portfolio Backend API is running perfectly!");
         
+        // Database check to keep Aiven alive
+        try {
+            jdbcTemplate.execute("SELECT 1");
+            status.put("database", "CONNECTED");
+        } catch (Exception e) {
+            status.put("database", "DISCONNECTED: " + e.getMessage());
+            status.put("status", "DOWN");
+        }
+
         // Uptime tracking
         long uptimeMillis = System.currentTimeMillis() - startTime;
         status.put("uptime_seconds", uptimeMillis / 1000);
         
-        // System stats for the "Perfect" view
+        // System stats
         Runtime runtime = Runtime.getRuntime();
         Map<String, String> system = new HashMap<>();
         system.put("memory_total", (runtime.totalMemory() / 1024 / 1024) + "MB");
@@ -31,11 +45,19 @@ public class HealthController {
     }
     
     @GetMapping("/api/health")
-    public Map<String, String> apiHealthCheck() {
-        Map<String, String> status = new HashMap<>();
+    public Map<String, Object> apiHealthCheck() {
+        Map<String, Object> status = new HashMap<>();
         status.put("status", "UP");
-        status.put("message", "API endpoints are accessible.");
+        
+        try {
+            jdbcTemplate.execute("SELECT 1");
+            status.put("database", "CONNECTED");
+        } catch (Exception e) {
+            status.put("database", "ERROR");
+        }
+        
         return status;
     }
 }
+
 
