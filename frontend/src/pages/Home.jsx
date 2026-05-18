@@ -34,7 +34,7 @@ const Home = () => {
     <div style={{ color: '#fff', background: '#0f0f11' }} className="home-container">
       {profile && (
         <SEO 
-          title={`${profile.name} | ${profile.title}`} 
+          title="MANOJ KUMAR JAVA FULL STACK DEVELOPMENT" 
           description={profile.bio}
           image={profile.profileImage}
         />

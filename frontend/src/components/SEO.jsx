@@ -1,9 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 
 const SEO = ({ title, description, image, url, type = 'website' }) => {
-  const siteTitle = "Manoj Boggavarapu | Java Full Stack Developer Portfolio";
-  const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
-  const siteDescription = description || "Manoj Boggavarapu Portfolio - Java Full Stack Developer skilled in Spring Boot, React, AI & ML projects.";
+  const siteTitle = "MANOJ KUMAR | JAVA FULL STACK DEVELOPER";
+  const fullTitle = title ? title : siteTitle;
+  const siteDescription = description || "Portfolio of Manoj Kumar Boggavarapu - Java Full Stack Developer specializing in Spring Boot, React, and scalable web applications.";
   const siteUrl = "https://manozz.site/";
   const fullUrl = url ? `${siteUrl}${url.startsWith('/') ? url.slice(1) : url}` : siteUrl;
   const siteImage = image || `${siteUrl}og-image.png`;
