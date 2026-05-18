@@ -91,14 +91,33 @@ const calculateOverallDuration = (roles) => {
 };
 
 const Experience = () => {
-  const { data: experiences, isLoading, isError } = useQuery({
+  // Read experiences instantly from localStorage on initial render for 0ms loading speed
+  const [initialData] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('bmk_portfolio_experiences');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const { data: serverExperiences, isLoading, isError } = useQuery({
     queryKey: ['experiences'],
     queryFn: async () => {
       const res = await experienceService.getAll();
-      return res.data?.data || res.data || [];
+      const data = res.data?.data || res.data || [];
+      try {
+        localStorage.setItem('bmk_portfolio_experiences', JSON.stringify(data));
+      } catch (e) {
+        console.error(e);
+      }
+      return data;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes cache
   });
+
+  // Stale-While-Revalidate: instantly use local storage, then silently update from backend in background!
+  const experiences = serverExperiences || initialData;
 
   // Group experiences by company to show promotions/multiple roles at the same company on a single card
   const groupedExperiences = React.useMemo(() => {
@@ -158,7 +177,10 @@ const Experience = () => {
     return groups;
   }, [experiences]);
 
-  if (isLoading) return (
+  // Show loading spinner ONLY if we have absolutely no cache data and the server is loading
+  const showSpinner = isLoading && !experiences;
+
+  if (showSpinner) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
       <div style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#6366f1', animation: 'spin 1s linear infinite' }} />
     </div>
