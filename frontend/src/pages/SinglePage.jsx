@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Home from './Home';
+import Experience from './Experience';
 import Skills from './Skills';
 import Projects from './Projects';
 import Blog from './Blog';
@@ -54,6 +55,12 @@ const SinglePage = () => (
   <div style={{ scrollBehavior: 'smooth' }}>
     <section id="hero">
       <Reveal><Home /></Reveal>
+    </section>
+
+    <Divider />
+
+    <section id="experience" style={{ scrollMarginTop: 72 }}>
+      <Reveal><Experience /></Reveal>
     </section>
 
     <Divider />

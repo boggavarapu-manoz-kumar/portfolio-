@@ -35,7 +35,7 @@ const LoadingFallback = () => (
 );
 
 import { useQueries } from '@tanstack/react-query';
-import { profileService, skillsService, projectsService, blogService } from './services/apiServices';
+import { profileService, skillsService, projectsService, blogService, experienceService } from './services/apiServices';
 
 function App() {
   // Pre-fetch everything to ensure instant loading when sections come into view
@@ -45,6 +45,7 @@ function App() {
       { queryKey: ['skills'], queryFn: async () => { const res = await skillsService.getAll(); return res.data?.data || res.data || []; } },
       { queryKey: ['projects'], queryFn: async () => { const res = await projectsService.getAll(); return res.data?.data || res.data || []; } },
       { queryKey: ['blogs'], queryFn: async () => { const res = await blogService.getAll(); return res?.data || []; } },
+      { queryKey: ['experiences'], queryFn: async () => { const res = await experienceService.getAll(); return res.data?.data || res.data || []; } },
     ]
   });
 

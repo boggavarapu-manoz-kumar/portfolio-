@@ -3,11 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'About',    id: 'hero'     },
-  { label: 'Skills',   id: 'skills'   },
-  { label: 'Projects', id: 'projects' },
-  { label: 'Blog',     id: 'blog'     },
-  { label: 'Contact',  id: 'contact'  },
+  { label: 'About',      id: 'hero'       },
+  { label: 'Experience', id: 'experience' },
+  { label: 'Skills',     id: 'skills'     },
+  { label: 'Projects',   id: 'projects'   },
+  { label: 'Blog',       id: 'blog'       },
+  { label: 'Contact',    id: 'contact'    },
 ];
 
 const Navbar = () => {

@@ -53,3 +53,10 @@ export const uploadService = {
 export const portfolioService = {
   getAll: () => api.get('/portfolio-data'),
 };
+
+export const experienceService = {
+  getAll: () => api.get('/experiences'),
+  create: (data) => api.post('/experiences', data),
+  update: (id, data) => api.put(`/experiences/${id}`, data),
+  delete: (id) => api.delete(`/experiences/${id}`),
+};

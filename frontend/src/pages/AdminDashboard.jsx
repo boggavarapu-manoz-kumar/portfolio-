@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LogOut, LayoutDashboard, Briefcase, FileText, Code, Plus, Trash2, Edit2, Mail, MessageCircle } from 'lucide-react';
-import { projectsService, skillsService, profileService, uploadService, blogService, contactService } from '../services/apiServices';
+import { projectsService, skillsService, profileService, uploadService, blogService, contactService, experienceService } from '../services/apiServices';
 import PhotoEditor from '../components/PhotoEditor';
 import { getImgUrl } from '../api/axiosInstance';
 
@@ -44,6 +44,14 @@ const AdminDashboard = () => {
     }
   });
 
+  const { data: experiences = [] } = useQuery({
+    queryKey: ['experiences'],
+    queryFn: async () => {
+      const res = await experienceService.getAll();
+      return res.data?.data || res.data || [];
+    }
+  });
+
   const { data: blogs = [] } = useQuery({
     queryKey: ['blogs'],
     queryFn: async () => {
@@ -71,6 +79,7 @@ const AdminDashboard = () => {
   // Form States (now initialized with query data via useEffect or local sync)
   const [projectForm, setProjectForm] = useState({ title: '', description: '', techStack: '', githubLink: '', liveLink: '', image: '' });
   const [skillForm, setSkillForm] = useState({ name: '', level: 'Beginner', category: 'WEB BASICS', logo: '' });
+  const [experienceForm, setExperienceForm] = useState({ title: '', company: '', companyLogo: '', employmentType: 'Full-time', location: '', locationType: 'On-site', startDate: '', endDate: '', description: '', sortOrder: 0 });
   const [blogForm, setBlogForm] = useState({ title: '', content: '' });
   const [editingId, setEditingId] = useState(null);
   const [profileForm, setProfileForm] = useState({
@@ -116,6 +125,16 @@ const AdminDashboard = () => {
     },
   });
 
+  const experienceMutation = useMutation({
+    mutationFn: async (data) => editingId ? experienceService.update(editingId, data) : experienceService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['experiences'] });
+      setExperienceForm({ title: '', company: '', companyLogo: '', employmentType: 'Full-time', location: '', locationType: 'On-site', startDate: '', endDate: '', description: '', sortOrder: 0 });
+      setEditingId(null);
+      alert("Experience saved!");
+    },
+  });
+
   const blogMutation = useMutation({
     mutationFn: async (data) => editingId ? blogService.update(editingId, data) : blogService.create(data),
     onSuccess: () => {
@@ -138,6 +157,7 @@ const AdminDashboard = () => {
     mutationFn: async ({ type, id }) => {
       if (type === 'project') return projectsService.delete(id);
       if (type === 'skill') return skillsService.delete(id);
+      if (type === 'experience') return experienceService.delete(id);
       if (type === 'blog') return blogService.delete(id);
       if (type === 'message') return contactService.delete(id);
     },
@@ -149,28 +169,20 @@ const AdminDashboard = () => {
   // --- HANDLERS ---
   const handleProjectSubmit = (e) => { e.preventDefault(); projectMutation.mutate(projectForm); };
   const handleSkillSubmit = (e) => { e.preventDefault(); skillMutation.mutate(skillForm); };
+  const handleExperienceSubmit = (e) => { e.preventDefault(); experienceMutation.mutate(experienceForm); };
   const handleBlogSubmit = (e) => { e.preventDefault(); blogMutation.mutate(blogForm); };
   const handleProfileSubmit = (e) => { e.preventDefault(); profileMutation.mutate(profileForm); };
 
   const editProject = (p) => { setEditingId(p.id); setProjectForm(p); };
   const editSkill = (s) => { setEditingId(s.id); setSkillForm(s); };
+  const editExperience = (e) => { setEditingId(e.id); setExperienceForm(e); };
   const editBlog = (b) => { setEditingId(b.id); setBlogForm(b); };
 
   const deleteProject = (id) => { if (window.confirm("Delete project?")) deleteMutation.mutate({ type: 'project', id }); };
   const deleteSkill = (id) => { if (window.confirm("Delete skill?")) deleteMutation.mutate({ type: 'skill', id }); };
+  const deleteExperience = (id) => { if (window.confirm("Delete experience?")) deleteMutation.mutate({ type: 'experience', id }); };
   const deleteBlog = (id) => { if (window.confirm("Delete blog?")) deleteMutation.mutate({ type: 'blog', id }); };
   const deleteMessage = (id) => { if (window.confirm("Delete message?")) deleteMutation.mutate({ type: 'message', id }); };
-
-  const handlePhotoSelect = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        setTempImage(reader.result);
-        setShowEditor(true);
-      });
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
 
   const handlePhotoSave = async (blob) => {
     const formData = new FormData();
@@ -195,6 +207,30 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleImageUpload = async (e, type) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const res = await uploadService.uploadImage(formData);
+        if (res.success) {
+          const url = res.data.url || res.url;
+          if (type === 'project') setProjectForm(prev => ({ ...prev, image: url }));
+          if (type === 'skill') setSkillForm(prev => ({ ...prev, logo: url }));
+          if (type === 'experience') setExperienceForm(prev => ({ ...prev, companyLogo: url }));
+          alert("Image uploaded successfully!");
+        } else {
+          alert("Upload failed: " + res.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Upload failed.");
+      }
+    }
+  };
+
   return (
     <div className="flex gap-8 min-h-[75vh]">
       {/* Sidebar */}
@@ -209,6 +245,9 @@ const AdminDashboard = () => {
           </button>
           <button onClick={() => { setActiveTab('skills'); setEditingId(null); }} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl font-medium transition-colors ${activeTab === 'skills' ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 text-slate-300'}`}>
             <Code size={20} /> Manage Skills
+          </button>
+          <button onClick={() => { setActiveTab('experiences'); setEditingId(null); }} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl font-medium transition-colors ${activeTab === 'experiences' ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 text-slate-300'}`}>
+            <Briefcase size={20} /> Manage Experience
           </button>
           <button onClick={() => { setActiveTab('blogs'); setEditingId(null); }} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl font-medium transition-colors ${activeTab === 'blogs' ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 text-slate-300'}`}>
             <FileText size={20} /> Manage Blogs
@@ -261,7 +300,20 @@ const AdminDashboard = () => {
                 <input required placeholder="Tech Stack (comma separated)" value={projectForm.techStack} onChange={e => setProjectForm({ ...projectForm, techStack: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 <input placeholder="GitHub Link" value={projectForm.githubLink} onChange={e => setProjectForm({ ...projectForm, githubLink: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 <input placeholder="Live Link (optional)" value={projectForm.liveLink} onChange={e => setProjectForm({ ...projectForm, liveLink: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
-                <input placeholder="Image URL (e.g. Imgur link)" value={projectForm.image} onChange={e => setProjectForm({ ...projectForm, image: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full col-span-2" />
+                
+                <div className="col-span-2 space-y-1">
+                  <label className="block text-xs font-semibold text-slate-400">Project Image</label>
+                  <div className="flex gap-4 items-center bg-slate-850 p-3 rounded-xl border border-slate-700">
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'project')} className="text-white text-xs" />
+                    {projectForm.image && (
+                      <div className="w-10 h-10 rounded border border-slate-700 overflow-hidden shrink-0 bg-white/5">
+                        <img src={getImgUrl(projectForm.image)} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <input placeholder="Or paste image URL" value={projectForm.image || ''} onChange={e => setProjectForm({ ...projectForm, image: e.target.value })} className="bg-slate-900 px-3 py-1.5 rounded border border-slate-700 text-white text-xs flex-1" />
+                  </div>
+                </div>
+
                 <textarea required placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full col-span-2 h-24" />
               </div>
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
@@ -315,6 +367,19 @@ const AdminDashboard = () => {
                   <option value="Advanced">Advanced</option>
                   <option value="Expert">Expert</option>
                 </select>
+
+                <div className="col-span-2 space-y-1">
+                  <label className="block text-xs font-semibold text-slate-400">Skill Logo</label>
+                  <div className="flex gap-4 items-center bg-slate-850 p-3 rounded-xl border border-slate-700">
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'skill')} className="text-white text-xs" />
+                    {skillForm.logo && (
+                      <div className="w-10 h-10 rounded border border-slate-700 overflow-hidden shrink-0 bg-white/5 flex items-center justify-center p-1">
+                        <img src={getImgUrl(skillForm.logo)} className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                    <input placeholder="Or paste logo URL (e.g. devicon, imgur)" value={skillForm.logo || ''} onChange={e => setSkillForm({ ...skillForm, logo: e.target.value })} className="bg-slate-900 px-3 py-1.5 rounded border border-slate-700 text-white text-xs flex-1" />
+                  </div>
+                </div>
               </div>
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
                 <Plus size={18} /> {editingId ? 'Update Skill' : 'Add Skill'}
@@ -350,6 +415,178 @@ const AdminDashboard = () => {
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => editSkill(s)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-blue-400 border border-slate-700"><Edit2 size={16} /></button>
                     <button onClick={() => deleteSkill(s.id)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-red-400 border border-slate-700"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {activeTab === 'experiences' && (
+          <>
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold text-white">{editingId ? 'Edit Experience' : 'Add New Experience'}</h1>
+              {editingId && <button onClick={() => { setEditingId(null); setExperienceForm({ title: '', company: '', companyLogo: '', employmentType: 'Full-time', location: '', locationType: 'On-site', startDate: '', endDate: '', description: '', sortOrder: 0 }) }} className="text-sm bg-slate-700 px-3 py-1 rounded text-white">Cancel Edit</button>}
+            </div>
+
+            <form onSubmit={handleExperienceSubmit} className="bg-slate-900 p-6 rounded-3xl border border-slate-700 space-y-4 mb-8">
+              <div className="grid grid-cols-2 gap-4">
+                <input required placeholder="Job Title" value={experienceForm.title} onChange={e => setExperienceForm({ ...experienceForm, title: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input required placeholder="Company" value={experienceForm.company} onChange={e => setExperienceForm({ ...experienceForm, company: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                
+                <div className="col-span-2 space-y-1">
+                  <label className="block text-xs font-semibold text-slate-400">Company Website Domain (for Logo API, e.g. google.com)</label>
+                  <div className="flex gap-4 items-center bg-slate-850 p-3 rounded-xl border border-slate-700">
+                    <input 
+                      placeholder="e.g. google.com, sundram.com (leave blank for automatic name-based matching)" 
+                      value={experienceForm.companyLogo || ''} 
+                      onChange={e => setExperienceForm({ ...experienceForm, companyLogo: e.target.value.toLowerCase().trim() })} 
+                      className="bg-slate-900 px-3 py-1.5 rounded border border-slate-700 text-white text-xs flex-1" 
+                    />
+                    {(() => {
+                      const domain = (() => {
+                        if (experienceForm.companyLogo) return experienceForm.companyLogo;
+                        if (!experienceForm.company) return null;
+                        const companyNameClean = experienceForm.company.toLowerCase().trim();
+                        const customMappings = {
+                          'sundram fasteners limited': 'sundram.com',
+                          'sundram fasteners': 'sundram.com',
+                          'tvs sundram': 'sundram.com',
+                          'tvs sundram fasteners limited': 'sundram.com',
+                          'tvs sundram fasteners': 'sundram.com',
+                          'google': 'google.com',
+                          'microsoft': 'microsoft.com'
+                        };
+                        return customMappings[companyNameClean] || 
+                               companyNameClean
+                                 .replace(/\s+(inc|llc|ltd|limited|co|corp|corporation)\b/g, '')
+                                 .replace(/[^a-z0-9]/g, '') + '.com';
+                      })();
+
+                      if (!domain) return null;
+
+                      const logoDevToken = import.meta.env.VITE_LOGODEV_TOKEN || 'pk_S_LMVztgS-GD0V6FTqaWFQ';
+                      const logoUrl = logoDevToken
+                        ? `https://img.logo.dev/${domain}?token=${logoDevToken}`
+                        : `https://logo.clearbit.com/${domain}`;
+
+                      return (
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded border border-slate-700 overflow-hidden shrink-0 bg-white/5 flex items-center justify-center p-1">
+                            <img 
+                              src={logoUrl} 
+                              className="w-full h-full object-contain" 
+                              onError={e => {
+                                if (e.target.src.includes('logo.dev')) {
+                                  e.target.src = `https://logo.clearbit.com/${domain}`;
+                                } else if (e.target.src.includes('clearbit.com')) {
+                                  e.target.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+                                } else if (e.target.src.includes('duckduckgo.com')) {
+                                  e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                                } else {
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }
+                              }} 
+                            />
+                            <div style={{ display: 'none' }} className="flex items-center justify-center text-xs font-bold text-slate-500 w-full h-full">
+                              {experienceForm.company ? experienceForm.company.charAt(0) : ''}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <select value={experienceForm.employmentType} onChange={e => setExperienceForm({ ...experienceForm, employmentType: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Internship">Internship</option>
+                </select>
+
+                <select value={experienceForm.locationType} onChange={e => setExperienceForm({ ...experienceForm, locationType: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full">
+                  <option value="On-site">On-site</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Remote">Remote</option>
+                </select>
+
+                <input placeholder="Location (e.g. New York, NY)" value={experienceForm.location} onChange={e => setExperienceForm({ ...experienceForm, location: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input required placeholder="Start Date (e.g. Jan 2022)" value={experienceForm.startDate} onChange={e => setExperienceForm({ ...experienceForm, startDate: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input placeholder="End Date (e.g. Present, Dec 2023)" value={experienceForm.endDate} onChange={e => setExperienceForm({ ...experienceForm, endDate: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input type="number" placeholder="Sort Order (0 is first)" value={experienceForm.sortOrder} onChange={e => setExperienceForm({ ...experienceForm, sortOrder: parseInt(e.target.value) || 0 })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                
+                <textarea placeholder="Description (Responsibilities, Achievements)" value={experienceForm.description} onChange={e => setExperienceForm({ ...experienceForm, description: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full col-span-2 h-32" />
+              </div>
+              <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
+                <Plus size={18} /> {editingId ? 'Update Experience' : 'Add Experience'}
+              </button>
+            </form>
+
+            <div className="space-y-4">
+              {experiences.map(exp => (
+                <div key={exp.id} className="bg-slate-900 p-5 rounded-2xl border border-slate-700/50 flex justify-between items-start group hover:border-slate-600 transition-all">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center p-1 border border-slate-800 shrink-0 overflow-hidden">
+                      {(() => {
+                        const companyNameClean = exp.company.toLowerCase().trim();
+                        const customMappings = {
+                          'sundram fasteners limited': 'sundram.com',
+                          'sundram fasteners': 'sundram.com',
+                          'tvs sundram': 'sundram.com',
+                          'tvs sundram fasteners limited': 'sundram.com',
+                          'tvs sundram fasteners': 'sundram.com',
+                          'google': 'google.com',
+                          'microsoft': 'microsoft.com'
+                        };
+                        const domain = exp.companyLogo || 
+                                       customMappings[companyNameClean] || 
+                                       companyNameClean
+                                         .replace(/\s+(inc|llc|ltd|limited|co|corp|corporation)\b/g, '')
+                                         .replace(/[^a-z0-9]/g, '') + '.com';
+                        const logoDevToken = import.meta.env.VITE_LOGODEV_TOKEN || 'pk_S_LMVztgS-GD0V6FTqaWFQ';
+                        const logoUrl = logoDevToken 
+                          ? `https://img.logo.dev/${domain}?token=${logoDevToken}`
+                          : `https://logo.clearbit.com/${domain}`;
+
+                        return (
+                          <>
+                            <img 
+                              src={logoUrl} 
+                              alt={exp.company} 
+                              className="w-full h-full object-contain" 
+                              onError={e => { 
+                                if (e.target.src.includes('logo.dev')) {
+                                  e.target.src = `https://logo.clearbit.com/${domain}`;
+                                } else if (e.target.src.includes('clearbit.com')) {
+                                  e.target.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+                                } else if (e.target.src.includes('duckduckgo.com')) {
+                                  e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                                } else {
+                                  e.target.style.display = 'none'; 
+                                  e.target.nextSibling.style.display = 'flex'; 
+                                }
+                              }} 
+                            />
+                            <div style={{ display: 'none' }} className="flex items-center justify-center text-xs font-bold text-slate-500 w-full h-full">
+                              {exp.company.charAt(0)}
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-lg">{exp.title}</h3>
+                      <p className="text-blue-400 font-medium text-sm mb-2">{exp.company} • {exp.employmentType}</p>
+                      <p className="text-slate-400 text-xs mb-2">{exp.startDate} - {exp.endDate || 'Present'} | {exp.location} ({exp.locationType})</p>
+                      <p className="text-slate-300 text-sm whitespace-pre-line line-clamp-2">{exp.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => editExperience(exp)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-blue-400 border border-slate-700"><Edit2 size={16} /></button>
+                    <button onClick={() => deleteExperience(exp.id)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-red-400 border border-slate-700"><Trash2 size={16} /></button>
                   </div>
                 </div>
               ))}
