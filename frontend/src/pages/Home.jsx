@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Code, Briefcase, FileText, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { profileService } from '../services/apiServices';
@@ -5,15 +6,38 @@ import { getImgUrl } from '../api/axiosInstance';
 import SEO from '../components/SEO';
 
 const Home = () => {
-  const { data: profile, isLoading: loading, isError: error } = useQuery({
+  // Read profile instantly from localStorage on initial render for 0ms loading speed
+  const [initialData] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bmk_portfolio_profile');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const { data: serverProfile, isLoading: loading, isError: error } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const res = await profileService.get();
-      return res?.data || res;
+      const data = res?.data || res;
+      try {
+        localStorage.setItem('bmk_portfolio_profile', JSON.stringify(data));
+      } catch (e) {
+        console.error(e);
+      }
+      return data;
     },
+    staleTime: 10 * 60 * 1000, // 10 minutes cache
   });
 
-  if (loading) return (
+  // Stale-While-Revalidate: instantly use local storage, then silently update from backend in background!
+  const profile = serverProfile || initialData;
+
+  // Show loading spinner ONLY if we have absolutely no cache data and the server is loading
+  const showSpinner = loading && !profile;
+
+  if (showSpinner) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', flexDirection: 'column', gap: 16 }}>
       <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.05)', borderTop: '3px solid #6366f1', animation: 'spin 0.8s linear infinite' }} />
       <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Loading Profile...</p>
@@ -32,13 +56,11 @@ const Home = () => {
 
   return (
     <div style={{ color: '#fff', background: '#0f0f11' }} className="home-container">
-      {profile && (
-        <SEO 
-          title="MANOJ KUMAR JAVA FULL STACK DEVELOPMENT" 
-          description={profile.bio}
-          image={profile.profileImage}
-        />
-      )}
+      <SEO 
+        title="MANOJ KUMAR | JAVA FULL STACK DEVELOPMENT" 
+        description={profile?.bio}
+        image={profile?.profileImage}
+      />
       <style>{`
         .hero-section {
           maxWidth: 1200px;
