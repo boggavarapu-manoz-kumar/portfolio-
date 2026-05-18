@@ -119,6 +119,42 @@ const Experience = () => {
         });
       }
     });
+
+    const getRoleCompareDate = (role, useEnd = true) => {
+      const dateStr = useEnd ? (role.endDate || 'Present') : role.startDate;
+      return parseDateString(dateStr);
+    };
+
+    // 1. Sort the roles inside each company card (latest role at the top)
+    groups.forEach(g => {
+      g.roles.sort((a, b) => {
+        const dateA = getRoleCompareDate(a, true);
+        const dateB = getRoleCompareDate(b, true);
+        if (dateB.getTime() !== dateA.getTime()) {
+          return dateB.getTime() - dateA.getTime();
+        }
+        const startA = getRoleCompareDate(a, false);
+        const startB = getRoleCompareDate(b, false);
+        return startB.getTime() - startA.getTime();
+      });
+    });
+
+    // 2. Sort the company cards themselves (latest company stays at the top of the page)
+    groups.sort((a, b) => {
+      const getGroupLatestDate = (group) => {
+        let latest = new Date(0);
+        group.roles.forEach(role => {
+          const end = getRoleCompareDate(role, true);
+          if (end > latest) latest = end;
+        });
+        return latest;
+      };
+      
+      const dateA = getGroupLatestDate(a);
+      const dateB = getGroupLatestDate(b);
+      return dateB.getTime() - dateA.getTime();
+    });
+
     return groups;
   }, [experiences]);
 
