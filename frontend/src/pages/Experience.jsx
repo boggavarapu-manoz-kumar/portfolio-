@@ -245,73 +245,64 @@ const Experience = () => {
                 
                 {/* Main Card Header */}
                 {(() => {
-                  const companyNameClean = group.company.toLowerCase().trim();
-                  const customMappings = {
-                    'sundram fasteners limited': 'sundram.com',
-                    'sundram fasteners': 'sundram.com',
-                    'tvs sundram': 'sundram.com',
-                    'tvs sundram fasteners limited': 'sundram.com',
-                    'tvs sundram fasteners': 'sundram.com',
-                    'google': 'google.com',
-                    'microsoft': 'microsoft.com'
-                  };
-                  const domain = group.companyLogo || 
-                                 customMappings[companyNameClean] || 
-                                 companyNameClean
-                                   .replace(/\s+(inc|llc|ltd|limited|co|corp|corporation)\b/g, '')
-                                   .replace(/[^a-z0-9]/g, '') + '.com';
+                  const logoUrl = group.companyLogo;
                   
-                  const logoDevToken = import.meta.env.VITE_LOGODEV_TOKEN || 'pk_S_LMVztgS-GD0V6FTqaWFQ';
-                  const logoUrl = logoDevToken 
-                    ? `https://img.logo.dev/${domain}?token=${logoDevToken}`
-                    : `https://logo.clearbit.com/${domain}`;
-
-                  return (
-                    <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: hasMultipleRoles ? 24 : 0 }} className="exp-header">
-                      {/* Company Logo container */}
-                      <div style={{ 
-                        width: 56, height: 56, borderRadius: 12, background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(255,255,255,0.08)', display: 'flex', 
-                        alignItems: 'center', justifyContent: 'center', overflow: 'hidden', 
-                        flexShrink: 0
-                      }}>
-                        <img 
-                          src={logoUrl} 
-                          alt={group.company} 
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-                          onError={e => { 
-                            if (e.target.src.includes('logo.dev')) {
-                              e.target.src = `https://logo.clearbit.com/${domain}`;
-                            } else if (e.target.src.includes('clearbit.com')) {
-                              e.target.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-                            } else if (e.target.src.includes('duckduckgo.com')) {
-                              e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                            } else {
-                              e.target.style.display = 'none'; 
-                              e.target.nextSibling.style.display = 'flex'; 
-                            }
-                          }} 
-                        />
-                        <div style={{ display: 'none', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', background: 'rgba(99,102,241,0.1)', color: '#818cf8', fontWeight: 700, fontSize: 20 }}>
-                          {group.company.charAt(0)}
+                  if (hasMultipleRoles) {
+                    return (
+                      <div style={{ display: 'flex', gap: 24, alignItems: 'center', marginBottom: 24 }} className="exp-header">
+                        <div style={{ 
+                          width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.08)', display: 'flex', 
+                          alignItems: 'center', justifyContent: 'center', overflow: 'hidden', 
+                          flexShrink: 0
+                        }}>
+                          {logoUrl ? (
+                            <img src={getImgUrl(logoUrl)} alt={group.company} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                          ) : null}
+                          <div style={{ display: logoUrl ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', background: 'rgba(99,102,241,0.1)', color: '#818cf8', fontWeight: 800, fontSize: 24 }}>
+                            {group.company.charAt(0)}
+                          </div>
                         </div>
-                      </div>
-                      
-                      {/* Company info */}
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', margin: '0 0 4px', lineHeight: 1.2 }}>
-                          {group.company}
-                        </h3>
-                        {hasMultipleRoles && (
-                          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 500, display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <div style={{ flex: 1 }}>
+                          <h3 style={{ fontSize: 24, fontWeight: 800, color: '#fff', margin: '0 0 6px', lineHeight: 1.2 }}>
+                            {group.company}
+                          </h3>
+                          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 600, display: 'flex', gap: 8, alignItems: 'center' }}>
                             <span>{group.roles.length} roles</span>
                             <span>•</span>
-                            <span style={{ color: '#818cf8', fontWeight: 600 }}>{overallStayText}</span>
+                            <span style={{ color: '#818cf8' }}>{overallStayText}</span>
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  );
+                    );
+                  } else {
+                    const role = group.roles[0];
+                    return (
+                      <div style={{ display: 'flex', gap: 24, alignItems: 'center' }} className="exp-header">
+                        <div style={{ 
+                          width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.08)', display: 'flex', 
+                          alignItems: 'center', justifyContent: 'center', overflow: 'hidden', 
+                          flexShrink: 0
+                        }}>
+                          {logoUrl ? (
+                            <img src={getImgUrl(logoUrl)} alt={group.company} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                          ) : null}
+                          <div style={{ display: logoUrl ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', background: 'rgba(99,102,241,0.1)', color: '#818cf8', fontWeight: 800, fontSize: 24 }}>
+                            {group.company.charAt(0)}
+                          </div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <h3 style={{ fontSize: 24, fontWeight: 800, color: '#fff', margin: '0 0 6px', lineHeight: 1.2 }}>
+                            {role.title}
+                          </h3>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: '#818cf8', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {group.company} {role.employmentType && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>• {role.employmentType}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
                 })()}
 
                 {/* Roles list */}
@@ -321,7 +312,7 @@ const Experience = () => {
                   gap: 32,
                   position: 'relative',
                   paddingLeft: hasMultipleRoles ? 32 : 0,
-                  marginTop: hasMultipleRoles ? 16 : 0
+                  marginTop: hasMultipleRoles ? 16 : 24
                 }}>
                   {/* Vertical connector line for multiple roles */}
                   {hasMultipleRoles && (
@@ -357,24 +348,28 @@ const Experience = () => {
                         )}
 
                         <div>
-                          <h4 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: '0 0 4px' }}>
-                            {role.title}
-                          </h4>
-                          
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#a855f7', marginBottom: 12 }}>
-                            {role.employmentType ? `${role.employmentType}` : ''}
-                          </div>
+                          {hasMultipleRoles && (
+                            <>
+                              <h4 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>
+                                {role.title}
+                              </h4>
+                              
+                              <div style={{ fontSize: 15, fontWeight: 700, color: '#a855f7', marginBottom: 12 }}>
+                                {role.employmentType ? `${role.employmentType}` : ''}
+                              </div>
+                            </>
+                          )}
 
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 500 }}>
-                              <Calendar size={14} />
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 16 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.6)', fontSize: 14, fontWeight: 600 }}>
+                              <Calendar size={16} />
                               <span>
                                 {role.startDate} - {role.endDate || 'Present'} {roleDuration && `• ${roleDuration}`}
                               </span>
                             </div>
                             {(role.location || role.locationType) && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 500 }}>
-                                <MapPin size={14} />
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.6)', fontSize: 14, fontWeight: 600 }}>
+                                <MapPin size={16} />
                                 <span>{role.location} {role.locationType && `(${role.locationType})`}</span>
                               </div>
                             )}

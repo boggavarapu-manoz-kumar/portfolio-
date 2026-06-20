@@ -65,14 +65,14 @@ const SinglePage = () => (
 
     <Divider />
 
-    <section id="skills" style={{ scrollMarginTop: 72 }}>
-      <Reveal><Skills /></Reveal>
+    <section id="projects" style={{ scrollMarginTop: 72 }}>
+      <Reveal><Projects /></Reveal>
     </section>
 
     <Divider />
 
-    <section id="projects" style={{ scrollMarginTop: 72 }}>
-      <Reveal><Projects /></Reveal>
+    <section id="skills" style={{ scrollMarginTop: 72 }}>
+      <Reveal><Skills /></Reveal>
     </section>
 
     <Divider />

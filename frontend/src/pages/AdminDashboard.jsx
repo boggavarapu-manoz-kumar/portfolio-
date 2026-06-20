@@ -435,67 +435,20 @@ const AdminDashboard = () => {
                 <input required placeholder="Company" value={experienceForm.company} onChange={e => setExperienceForm({ ...experienceForm, company: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 
                 <div className="col-span-2 space-y-1">
-                  <label className="block text-xs font-semibold text-slate-400">Company Website Domain (for Logo API, e.g. google.com)</label>
+                  <label className="block text-xs font-semibold text-slate-400">Company Logo Image</label>
                   <div className="flex gap-4 items-center bg-slate-850 p-3 rounded-xl border border-slate-700">
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'experience')} className="text-white text-xs" />
+                    {experienceForm.companyLogo && (
+                      <div className="w-10 h-10 rounded border border-slate-700 overflow-hidden shrink-0 bg-white/5 flex items-center justify-center p-1">
+                        <img src={getImgUrl(experienceForm.companyLogo)} className="w-full h-full object-contain" />
+                      </div>
+                    )}
                     <input 
-                      placeholder="e.g. google.com, sundram.com (leave blank for automatic name-based matching)" 
+                      placeholder="Or paste image URL" 
                       value={experienceForm.companyLogo || ''} 
-                      onChange={e => setExperienceForm({ ...experienceForm, companyLogo: e.target.value.toLowerCase().trim() })} 
+                      onChange={e => setExperienceForm({ ...experienceForm, companyLogo: e.target.value })} 
                       className="bg-slate-900 px-3 py-1.5 rounded border border-slate-700 text-white text-xs flex-1" 
                     />
-                    {(() => {
-                      const domain = (() => {
-                        if (experienceForm.companyLogo) return experienceForm.companyLogo;
-                        if (!experienceForm.company) return null;
-                        const companyNameClean = experienceForm.company.toLowerCase().trim();
-                        const customMappings = {
-                          'sundram fasteners limited': 'sundram.com',
-                          'sundram fasteners': 'sundram.com',
-                          'tvs sundram': 'sundram.com',
-                          'tvs sundram fasteners limited': 'sundram.com',
-                          'tvs sundram fasteners': 'sundram.com',
-                          'google': 'google.com',
-                          'microsoft': 'microsoft.com'
-                        };
-                        return customMappings[companyNameClean] || 
-                               companyNameClean
-                                 .replace(/\s+(inc|llc|ltd|limited|co|corp|corporation)\b/g, '')
-                                 .replace(/[^a-z0-9]/g, '') + '.com';
-                      })();
-
-                      if (!domain) return null;
-
-                      const logoDevToken = import.meta.env.VITE_LOGODEV_TOKEN || 'pk_S_LMVztgS-GD0V6FTqaWFQ';
-                      const logoUrl = logoDevToken
-                        ? `https://img.logo.dev/${domain}?token=${logoDevToken}`
-                        : `https://logo.clearbit.com/${domain}`;
-
-                      return (
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded border border-slate-700 overflow-hidden shrink-0 bg-white/5 flex items-center justify-center p-1">
-                            <img 
-                              src={logoUrl} 
-                              className="w-full h-full object-contain" 
-                              onError={e => {
-                                if (e.target.src.includes('logo.dev')) {
-                                  e.target.src = `https://logo.clearbit.com/${domain}`;
-                                } else if (e.target.src.includes('clearbit.com')) {
-                                  e.target.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-                                } else if (e.target.src.includes('duckduckgo.com')) {
-                                  e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                                } else {
-                                  e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'flex';
-                                }
-                              }} 
-                            />
-                            <div style={{ display: 'none' }} className="flex items-center justify-center text-xs font-bold text-slate-500 w-full h-full">
-                              {experienceForm.company ? experienceForm.company.charAt(0) : ''}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
                   </div>
                 </div>
 
@@ -531,46 +484,22 @@ const AdminDashboard = () => {
                   <div className="flex gap-4">
                     <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center p-1 border border-slate-800 shrink-0 overflow-hidden">
                       {(() => {
-                        const companyNameClean = exp.company.toLowerCase().trim();
-                        const customMappings = {
-                          'sundram fasteners limited': 'sundram.com',
-                          'sundram fasteners': 'sundram.com',
-                          'tvs sundram': 'sundram.com',
-                          'tvs sundram fasteners limited': 'sundram.com',
-                          'tvs sundram fasteners': 'sundram.com',
-                          'google': 'google.com',
-                          'microsoft': 'microsoft.com'
-                        };
-                        const domain = exp.companyLogo || 
-                                       customMappings[companyNameClean] || 
-                                       companyNameClean
-                                         .replace(/\s+(inc|llc|ltd|limited|co|corp|corporation)\b/g, '')
-                                         .replace(/[^a-z0-9]/g, '') + '.com';
-                        const logoDevToken = import.meta.env.VITE_LOGODEV_TOKEN || 'pk_S_LMVztgS-GD0V6FTqaWFQ';
-                        const logoUrl = logoDevToken 
-                          ? `https://img.logo.dev/${domain}?token=${logoDevToken}`
-                          : `https://logo.clearbit.com/${domain}`;
+                        const logoUrl = exp.companyLogo;
 
                         return (
                           <>
-                            <img 
-                              src={logoUrl} 
-                              alt={exp.company} 
-                              className="w-full h-full object-contain" 
-                              onError={e => { 
-                                if (e.target.src.includes('logo.dev')) {
-                                  e.target.src = `https://logo.clearbit.com/${domain}`;
-                                } else if (e.target.src.includes('clearbit.com')) {
-                                  e.target.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-                                } else if (e.target.src.includes('duckduckgo.com')) {
-                                  e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                                } else {
+                            {logoUrl ? (
+                              <img 
+                                src={getImgUrl(logoUrl)} 
+                                alt={exp.company} 
+                                className="w-full h-full object-contain" 
+                                onError={e => { 
                                   e.target.style.display = 'none'; 
                                   e.target.nextSibling.style.display = 'flex'; 
-                                }
-                              }} 
-                            />
-                            <div style={{ display: 'none' }} className="flex items-center justify-center text-xs font-bold text-slate-500 w-full h-full">
+                                }} 
+                              />
+                            ) : null}
+                            <div style={{ display: logoUrl ? 'none' : 'flex' }} className="items-center justify-center text-xs font-bold text-slate-500 w-full h-full">
                               {exp.company.charAt(0)}
                             </div>
                           </>
@@ -597,12 +526,13 @@ const AdminDashboard = () => {
           <>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-white">{editingId ? 'Edit Blog Post' : 'Post New Blog'}</h1>
-              {editingId && <button onClick={() => { setEditingId(null); setBlogForm({ title: '', content: '' }) }} className="text-sm bg-slate-700 px-3 py-1 rounded text-white">Cancel Edit</button>}
+              {editingId && <button onClick={() => { setEditingId(null); setBlogForm({ title: '', content: '', externalLink: '' }) }} className="text-sm bg-slate-700 px-3 py-1 rounded text-white">Cancel Edit</button>}
             </div>
 
             <form onSubmit={handleBlogSubmit} className="bg-slate-900 p-6 rounded-3xl border border-slate-700 space-y-4 mb-8">
               <div className="space-y-4">
                 <input required placeholder="Blog Title" value={blogForm.title} onChange={e => setBlogForm({ ...blogForm, title: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
+                <input placeholder="External Link (Optional, e.g. LinkedIn post, Medium article)" value={blogForm.externalLink || ''} onChange={e => setBlogForm({ ...blogForm, externalLink: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full" />
                 <textarea required placeholder="Write your post here... (LinkedIn style)" value={blogForm.content} onChange={e => setBlogForm({ ...blogForm, content: e.target.value })} className="bg-slate-800 p-3 rounded-lg border border-slate-700 text-white w-full h-64 resize-none" />
               </div>
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
