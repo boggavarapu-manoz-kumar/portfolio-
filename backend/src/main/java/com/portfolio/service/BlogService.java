@@ -36,6 +36,7 @@ public class BlogService {
         blog.setTitle(dto.getTitle());
         blog.setContent(dto.getContent());
         blog.setImage(dto.getImage());
+        blog.setExternalLink(dto.getExternalLink());
         
         Blog savedBlog = blogRepository.save(blog);
         return mapToDto(savedBlog);
@@ -49,6 +50,9 @@ public class BlogService {
         blog.setContent(dto.getContent());
         if (dto.getImage() != null) {
             blog.setImage(dto.getImage());
+        }
+        if (dto.getExternalLink() != null) {
+            blog.setExternalLink(dto.getExternalLink());
         }
         
         Blog updatedBlog = blogRepository.save(blog);
@@ -69,6 +73,7 @@ public class BlogService {
         dto.setTitle(blog.getTitle());
         dto.setContent(blog.getContent());
         dto.setImage(blog.getImage());
+        dto.setExternalLink(blog.getExternalLink());
         dto.setCreatedAt(blog.getCreatedAt());
         return dto;
     }

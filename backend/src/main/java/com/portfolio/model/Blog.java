@@ -15,6 +15,7 @@ public class Blog {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
     private String image;
+    private String externalLink;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @PrePersist
@@ -44,6 +45,10 @@ public class Blog {
     
     public String getImage() {
         return this.image;
+    }
+
+    public String getExternalLink() {
+        return this.externalLink;
     }
 
     
@@ -76,6 +81,10 @@ public class Blog {
         this.image = image;
     }
 
+    public void setExternalLink(final String externalLink) {
+        this.externalLink = externalLink;
+    }
+
     
     
     public void setCreatedAt(final LocalDateTime createdAt) {
@@ -102,6 +111,9 @@ public class Blog {
         final java.lang.Object this$image = this.getImage();
         final java.lang.Object other$image = other.getImage();
         if (this$image == null ? other$image != null : !this$image.equals(other$image)) return false;
+        final java.lang.Object this$externalLink = this.getExternalLink();
+        final java.lang.Object other$externalLink = other.getExternalLink();
+        if (this$externalLink == null ? other$externalLink != null : !this$externalLink.equals(other$externalLink)) return false;
         final java.lang.Object this$createdAt = this.getCreatedAt();
         final java.lang.Object other$createdAt = other.getCreatedAt();
         if (this$createdAt == null ? other$createdAt != null : !this$createdAt.equals(other$createdAt)) return false;
@@ -128,6 +140,8 @@ public class Blog {
         result = result * PRIME + ($content == null ? 43 : $content.hashCode());
         final java.lang.Object $image = this.getImage();
         result = result * PRIME + ($image == null ? 43 : $image.hashCode());
+        final java.lang.Object $externalLink = this.getExternalLink();
+        result = result * PRIME + ($externalLink == null ? 43 : $externalLink.hashCode());
         final java.lang.Object $createdAt = this.getCreatedAt();
         result = result * PRIME + ($createdAt == null ? 43 : $createdAt.hashCode());
         return result;
@@ -137,7 +151,7 @@ public class Blog {
     
     
     public java.lang.String toString() {
-        return "Blog(id=" + this.getId() + ", title=" + this.getTitle() + ", content=" + this.getContent() + ", image=" + this.getImage() + ", createdAt=" + this.getCreatedAt() + ")";
+        return "Blog(id=" + this.getId() + ", title=" + this.getTitle() + ", content=" + this.getContent() + ", image=" + this.getImage() + ", externalLink=" + this.getExternalLink() + ", createdAt=" + this.getCreatedAt() + ")";
     }
 
     
@@ -147,11 +161,12 @@ public class Blog {
 
     
     
-    public Blog(final Long id, final String title, final String content, final String image, final LocalDateTime createdAt) {
+    public Blog(final Long id, final String title, final String content, final String image, final String externalLink, final LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.image = image;
+        this.externalLink = externalLink;
         this.createdAt = createdAt;
     }
 }

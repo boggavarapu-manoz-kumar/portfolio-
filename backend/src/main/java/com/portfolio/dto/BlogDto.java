@@ -11,6 +11,7 @@ public class BlogDto {
     @NotBlank(message = "Blog content is required")
     private String content;
     private String image;
+    private String externalLink;
     private LocalDateTime createdAt;
 
     
@@ -40,6 +41,10 @@ public class BlogDto {
     
     public String getImage() {
         return this.image;
+    }
+
+    public String getExternalLink() {
+        return this.externalLink;
     }
 
     
@@ -72,6 +77,10 @@ public class BlogDto {
         this.image = image;
     }
 
+    public void setExternalLink(final String externalLink) {
+        this.externalLink = externalLink;
+    }
+
     
     
     public void setCreatedAt(final LocalDateTime createdAt) {
@@ -98,6 +107,9 @@ public class BlogDto {
         final java.lang.Object this$image = this.getImage();
         final java.lang.Object other$image = other.getImage();
         if (this$image == null ? other$image != null : !this$image.equals(other$image)) return false;
+        final java.lang.Object this$externalLink = this.getExternalLink();
+        final java.lang.Object other$externalLink = other.getExternalLink();
+        if (this$externalLink == null ? other$externalLink != null : !this$externalLink.equals(other$externalLink)) return false;
         final java.lang.Object this$createdAt = this.getCreatedAt();
         final java.lang.Object other$createdAt = other.getCreatedAt();
         if (this$createdAt == null ? other$createdAt != null : !this$createdAt.equals(other$createdAt)) return false;
@@ -124,6 +136,8 @@ public class BlogDto {
         result = result * PRIME + ($content == null ? 43 : $content.hashCode());
         final java.lang.Object $image = this.getImage();
         result = result * PRIME + ($image == null ? 43 : $image.hashCode());
+        final java.lang.Object $externalLink = this.getExternalLink();
+        result = result * PRIME + ($externalLink == null ? 43 : $externalLink.hashCode());
         final java.lang.Object $createdAt = this.getCreatedAt();
         result = result * PRIME + ($createdAt == null ? 43 : $createdAt.hashCode());
         return result;
@@ -133,6 +147,6 @@ public class BlogDto {
     
     
     public java.lang.String toString() {
-        return "BlogDto(id=" + this.getId() + ", title=" + this.getTitle() + ", content=" + this.getContent() + ", image=" + this.getImage() + ", createdAt=" + this.getCreatedAt() + ")";
+        return "BlogDto(id=" + this.getId() + ", title=" + this.getTitle() + ", content=" + this.getContent() + ", image=" + this.getImage() + ", externalLink=" + this.getExternalLink() + ", createdAt=" + this.getCreatedAt() + ")";
     }
 }

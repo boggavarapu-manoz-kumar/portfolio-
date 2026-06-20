@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { blogService } from '../services/apiServices';
-import { Calendar, X, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, X, ArrowRight, BookOpen, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 const Blog = () => {
   const { data: blogs = [], isLoading: loading } = useQuery({
@@ -117,7 +117,7 @@ const Blog = () => {
           }
         `}</style>
 
-        {blogs.map((blog, index) => {
+        {[...blogs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((blog, index) => {
           const isFocused = index === activeIndex;
           return (
             <article 
@@ -174,13 +174,34 @@ const Blog = () => {
                 </p>
               </div>
 
-              <div style={{ 
-                display: 'flex', alignItems: 'center', gap: 8, 
-                color: isFocused ? '#6366f1' : 'rgba(255,255,255,0.8)', 
-                fontSize: 12, fontWeight: 800, textTransform: 'uppercase', 
-                letterSpacing: '0.1em', marginTop: 32, transition: 'all 0.4s'
-              }}>
-                Read Insight <ArrowRight size={14} />
+              <div style={{ marginTop: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {blog.externalLink && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); window.open(blog.externalLink, '_blank', 'noopener,noreferrer'); }}
+                    style={{
+                      width: '100%',
+                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                      color: '#fff', border: 'none',
+                      padding: '14px 20px', borderRadius: 16, fontSize: 12, fontWeight: 800, textTransform: 'uppercase',
+                      letterSpacing: '0.15em', cursor: 'pointer', transition: 'all 0.4s',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      boxShadow: '0 10px 20px -10px rgba(99,102,241,0.5)'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 25px -10px rgba(99,102,241,0.6)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 20px -10px rgba(99,102,241,0.5)'; }}
+                  >
+                    Navigate to link <ExternalLink size={16} />
+                  </button>
+                )}
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: 8, 
+                  color: isFocused ? '#818cf8' : 'rgba(255,255,255,0.4)', 
+                  fontSize: 11, fontWeight: 800, textTransform: 'uppercase', 
+                  letterSpacing: '0.1em', transition: 'all 0.4s',
+                  justifyContent: blog.externalLink ? 'center' : 'flex-start'
+                }}>
+                  {blog.externalLink ? 'Or Read Insight Internally' : 'Read Insight'} <ArrowRight size={14} />
+                </div>
               </div>
             </article>
           );
@@ -255,8 +276,24 @@ const Blog = () => {
               </div>
             </div>
 
-            <div style={{ padding: '40px 60px', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setSelectedBlog(null)} style={{ background: '#fff', color: '#000', border: 'none', padding: '16px 40px', borderRadius: 20, fontWeight: 900, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.3s' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>Close Reading</button>
+            <div style={{ padding: '40px 60px', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {selectedBlog.externalLink ? (
+                <button 
+                  onClick={() => window.open(selectedBlog.externalLink, '_blank', 'noopener,noreferrer')} 
+                  style={{ 
+                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', 
+                    padding: '16px 32px', borderRadius: 99, fontWeight: 900, fontSize: 13, textTransform: 'uppercase', 
+                    letterSpacing: '0.15em', cursor: 'pointer', transition: 'all 0.4s',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    boxShadow: '0 10px 20px -10px rgba(99,102,241,0.5)'
+                  }} 
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 25px -10px rgba(99,102,241,0.6)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 20px -10px rgba(99,102,241,0.5)'; }}
+                >
+                  Navigate to link <ExternalLink size={18} />
+                </button>
+              ) : <div />}
+              <button onClick={() => setSelectedBlog(null)} style={{ background: '#fff', color: '#000', border: 'none', padding: '16px 40px', borderRadius: 99, fontWeight: 900, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', transition: 'all 0.4s' }} onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)'; }}>Close Reading</button>
             </div>
           </div>
         </div>

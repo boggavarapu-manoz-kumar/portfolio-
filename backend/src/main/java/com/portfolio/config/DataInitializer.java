@@ -63,13 +63,9 @@ public class DataInitializer {
 
             // Initialize Blog if empty
             if (blogRepository.count() == 0) {
-                blogRepository.save(new com.portfolio.model.Blog(
-                        null,
-                        "My First Tech Blog",
-                        "This is a comprehensive guide about modern web development featuring Spring Boot and React.",
-                        "/uploads/images/blog_1.jpg",
-                        java.time.LocalDateTime.now()
-                ));
+                blogRepository.save(new com.portfolio.model.Blog(null, "The Future of Web Development", "Web development is constantly evolving with new frameworks, AI-assisted coding tools, and improved performance metrics. Keeping up requires continuous learning...", "/uploads/images/blog1.jpg", null, java.time.LocalDateTime.now()));
+                blogRepository.save(new com.portfolio.model.Blog(null, "Mastering React Query", "TanStack Query fundamentally changes how we think about state management. Instead of putting everything in Redux, separate your server state and let React Query handle caching, deduping, and background updates.", "/uploads/images/blog2.jpg", null, java.time.LocalDateTime.now().minusDays(2)));
+                blogRepository.save(new com.portfolio.model.Blog(null, "Why Spring Boot Still Rocks in 2024", "Despite the rise of Go and Node.js, Spring Boot remains the king of enterprise backends. With the recent performance improvements in Spring Boot 3 and native compilation support via GraalVM, it's faster than ever.", "/uploads/images/blog3.jpg", null, java.time.LocalDateTime.now().minusDays(5)));
                 System.out.println("Sample blog created.");
             }
             // Initialize Profile if empty
